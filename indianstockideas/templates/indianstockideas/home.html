@@ -1,0 +1,98 @@
+{% extends 'indianstockideas/base.html' %}
+
+{% block content %}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+<script>
+    $(document).ready(function(){
+      var date_input=$('input[name="date"]'); //our date input has the name "date"
+      var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+      var options={
+        format: 'mm/dd/yyyy',
+        container: container,
+        todayHighlight: true,
+        autoclose: true,
+      };
+      date_input.datepicker(options);
+      
+      $.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],function(index,value){
+      
+      $('#hour').append('<option value = "'+value.toString()+'">'+value.toString()+'</option>')
+      });
+      
+       $.each([00,15,30,45],function(index,value){
+       
+       $('#minutes').append('<option value = "'+value.toString()+'">'+value.toString()+'</option>')
+      });
+      
+    })
+</script>
+
+
+<script type="text/javascript" src="http://www.clubdesign.at/floatlabels.js"></script>
+
+<div class="container">
+        <div class="row centered-form">
+        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+        	<div class="panel panel-default">
+        		<div class="panel-heading">
+			   		<h1 class="panel-title">join...<small>It's free!</small></h1>
+						</div>
+						<div class="panel-body">
+			   		<form role="form" method = "POST" action = ''>
+			   		{% csrf_token %}
+			   			<div class="row">
+			   				<div class="col-xs-6 col-sm-6 col-md-6">
+			   					<div class="form-group">
+			               <input type="text" name="first_name" id="first_name" class="form-control input-sm floatlabel" placeholder="First Name" value = "{{form.first_name.value}}">
+			   					<br><span style="color:red;font-size:10px;">{{form.first_name.errors}}</span>
+			   					</div>
+			   				</div>
+			   				<div class="col-xs-6 col-sm-6 col-md-6">
+			   					<div class="form-group">
+			   						<input type="text" name="last_name" id="last_name" class="form-control input-sm" placeholder="Last Name" value = "{{form.last_name.value}}">
+			   					<br><span style="color:red;font-size:10px;">{{form.last_name.errors}}</span>
+			   					</div>
+			   				</div>
+			   			</div>
+
+			   			<div class="form-group">
+			   				<input type="text" name="email" id="email" class="form-control input-sm" placeholder="Email Address"value = "{{form.email.value}}">
+			   				<br><span style="color:red;font-size:10px;">{{form.email.errors}}</span>
+			   			</div>
+			   			
+                        <div class="form-group">
+			   				<input type="text" name="phone" id="contact" class="form-control input-sm" placeholder=" Phone Number"value = "{{form.phone.value}}">
+			   				<br><span style="color:red;font-size:10px;">{{form.phone.errors}}</span>
+			   			</div>
+			   			
+			   			<div class="row">
+			   			<div class="col-xs-6 col-sm-6 col-md-6">
+			   			<div class="form-group">
+			   		        <input type="text" name="date" id="date" class="form-control input-sm" placeholder="MM/DD/YYY" value = "{{form.date.value}}">
+			   			
+			   			</div>
+			   			<span style="color:red;font-size:10px;">{{form.date.errors}}</span>
+			   			</div>
+			   			
+			   			<div class="col-xs-6 col-sm-6 col-md-6">
+			   			<div class="form-group">
+			   		        <select id ="hour"></select>
+			   		        <select id ="minutes"></select>
+			   		        
+			   			</div>
+			   			</div>
+			   			</div>
+			   			
+			   			<input type ="hidden" name = "time" id = "id_time" value = "0">
+			   			<input type="submit" value="Register" class="btn btn-success btn-block">
+			   		
+			   		</form>
+			   	</div>
+	   		</div>
+    		</div>
+    	</div>
+    </div>
+ {% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'indianstockideas/base.html' %}
+
+{% block content %}
+
+
+
+<div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">IndianStockIdeas</h3>
+              <nav>
+                <ul class="nav masthead-nav">
+                  <li class="active"><a href="#">Home</a></li>
+                  <li><a href="#">Features</a></li>
+                  <li><a href="/login/">login</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+          <div class="inner cover">
+            <h2 class="cover-heading">Grab the ideas </h2>
+            <p class="lead">Big money is made in the stock market by being on the right side of the major moves. The idea is to get in harmony with the market. 
+</p>
+           
+          </div>
+			<div class="col-md-6 col-md-offset-3">
+    		<div class="panel panel-default">
+			 	<div class="panel-heading">
+			   	<h3 class="panel-title">Sign in</h3>
+				</div>
+			 	<div class="panel-body">
+			   	<form accept-charset="UTF-8" role= "form" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+{% csrf_token %}
+                    <fieldset>
+			   	 	<div class="form-group">
+			   		   <input class="form-control" placeholder="E-mail" name="username" type="text">
+			   		</div>
+			   		<div class="form-group">
+			   			<input class="form-control" placeholder="Password" name="password" type="password" value="">
+			   		</div>
+			   		<div class="checkbox">
+			   	   	<label>
+			   	   		<input name="remember" type="checkbox" value="Remember Me"> Remember Me
+			   	   	</label>
+			   	   </div>
+			   		<input class="btn btn-lg btn-success btn-block" type="submit" value="login">
+			   	</fieldset>
+			   	{% if form.errors %}
+
+<p style = "color:red">Your username and password didn't match. Please try again.</p>
+{% endif %}
+<input type="hidden" name="next" value="{{ next }}" />
+			     	</form>
+			   </div>
+			</div>
+		</div>
+          <div class="mastfoot">
+            <div class="inner">
+              <p><a href="http://getbootstrap.com/">Right ideas</a>, by <a href="https://twitter.com/mdo">IndianStockIdeas</a>.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      
+{% endblock %}
