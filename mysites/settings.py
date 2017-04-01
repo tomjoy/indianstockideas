@@ -128,6 +128,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # other finders..
+)
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
