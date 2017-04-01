@@ -25,7 +25,7 @@ SECRET_KEY = 'l6ik-=6vy89i+%dk2s@cby4k_po^n(!g9^#_^1ehw#w_wtdw8$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.104','indianstockideas.in']
+#ALLOWED_HOSTS = ['192.168.1.104','indianstockideas.in']
 
 
 # Application definition
