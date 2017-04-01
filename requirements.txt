@@ -1,6 +1,6 @@
 Django==1.10.5
 Ghost.py==0.2.3
-PySide==1.2.4
+#PySide==1.2.4
 argparse==1.2.1
 dj-database-url==0.4.2
 lxml==3.7.2
