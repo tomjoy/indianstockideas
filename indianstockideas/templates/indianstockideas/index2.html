@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<!-- saved from url=(0039)http://getbootstrap.com/examples/theme/ -->
+
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +8,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+    <link rel="icon" href="">
 
     <title>IndianStockIdeas</title>
 
@@ -18,7 +18,6 @@
 
   <body>
 
-    <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -28,22 +27,21 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="http://getbootstrap.com/examples/theme/#">IndianStockIdeas</a>
+          <a class="navbar-brand" href="/">IndianStockIdeas</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="/">Recommended+</a></li>
-            <li><a href="/featured/">Featured</a></li>
+          <ul class="nav navbar-nav" style="width:80%">
+           <li class="active"><a href="/">Recommended+</a></li>
+            <li ><a href="/featured/">Featured</a></li>
             <li><a href="#">Trades</a></li>
-            </ul>
-            <ul class="nav navbar-nav" style="float:right;">
-            <li class="dropdown" >
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{request.user}} <span class="caret"></span></a>
+            <li class="dropdown" style="float:right">
+              <a href="http://getbootstrap.com/examples/theme/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{request.user}} <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="http://getbootstrap.com/examples/theme/#">Logout</a></li>
+                <li><a href="/logout/">Logout</a></li>
                 
               </ul>
-            </ul>
+            </li>
+          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -65,10 +63,19 @@
     <tbody >
     {%for rowdata in commondata%}
       <tr>
-      
+       {% if forloop.first %}
+       <td>
+       {{ forloop.counter }}
+       </td>
+    {% endif %}
       {% for i in rowdata%}
+      {% if forloop.first %}
+       
+    {% else %}
         <td>{{i}}</td>
+        {% endif %}
         {% endfor%}
+        
       </tr>
       {% endfor%}
     </tbody>
@@ -79,11 +86,13 @@
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!--
+     <script src="{% static 'carpoling/jquery.min.js' %}"></script>
+     <script src="{% static 'carpoling/bootstrap.min.js' %}"></script>
+    
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="./Theme Template for Bootstrap_files/jquery.min.js"></script>
+   <!--
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="./Theme Template for Bootstrap_files/bootstrap.min.js"></script>
+    
     <script src="./Theme Template for Bootstrap_files/docs.min.js"></script>
    -->
   

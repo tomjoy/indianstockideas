@@ -13,6 +13,8 @@ from lxml import html
 from StringIO import StringIO
 from zipfile import ZipFile
 from .models import NSESetting,ScreenerSetting, ScreenerData, FeaturedStock
+from lxml import etree
+import urllib,xlrd
 
 class IndexView(generic.TemplateView):
     template_name = 'indianstockideas/index2.html'
@@ -21,6 +23,7 @@ class IndexView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         commondata = FeaturedStock.objects.all()
+        #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
 	      'commondata':list(commondata.values_list()),   
 	      'headers':['SYMBOL','SERIES','OPEN','HIGH','LOW','CLOSE','LAST','PREVCLOSE','TOTTRDQTY','TOTTRDVAL','TIMESTAMP','TOTALTRADES','ISIN', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
@@ -95,7 +98,8 @@ def executescript(type):
                                     ctohigh = screencol[12],
                                     ftw_index = screencol[13],
                                     cash_from_operations_last_year =screencol[14], 
-                                    cash_from_operations_preceding_year = screencol[15])
+                                    cash_from_operations_preceding_year = screencol[15],
+                                    company_url = screencol[0] )
                 obj.save()
     elif type == "Fetch Data":
         obj = NSESetting.objects.filter(active=True)[0]
@@ -140,10 +144,15 @@ def executescript(type):
         for companyStock in finalList:
             for screen in screens:
                 if screen.symbol == companyStock[0]:
-                    saveStocks(companyStock,screen)
+                    print screen.symbol
+                    if downloadExcel(screen.company_url,screen.symbol):
+                        #print companyStock
+                    #if gridAnalysis(screen.symbol):
+                        saveStocks(companyStock,screen)
                     #FeaturedStocks.append(companyStock+1)
                     
-                
+def gridAnalysis(screen): 
+    return True              
                 
 def findCompany(company,dateData):
     for i in dateData:
@@ -206,10 +215,74 @@ def getnse(screens):
                     break
 
                     
-	print len(screens)    			
 	return commonmatches
 	    			
-	    	
+def downloadExcel(url,company = 'SATIN'):
+    print url,"urllllllllll"
+    obj = ScreenerSetting.objects.filter(active=True)[0]
+    session_requests = requests.session()
+    result = session_requests.get(obj.login_url)
+    tree = html.fromstring(result.text)
+    authenticity_token = list(set(tree.xpath("//input[@name='csrfmiddlewaretoken']/@value")))[0]
+    payload = {
+        "username": obj.login_username,
+        "password": obj.login_password, 
+        "csrfmiddlewaretoken": authenticity_token
+    }
+    result = session_requests.post(obj.login_url, data = payload, headers = dict(referer = obj.login_url))
+    screenerurl = obj.login_url.rsplit('/login')[0]
+    apiurl = screenerurl+"/api"+url
+    result = session_requests.get(apiurl, headers = dict(referer = apiurl))
+    AllDict=json.loads(result.text)
+    id = AllDict['warehouse_set']['id']
+    downloadurl = screenerurl+"/excel/"+str(id)
+    s = session_requests.get(downloadurl,stream=True)
+    output = open('csvfiles/'+company+'.xls', 'wb')
+    output.write(s.content)
+    output.close()
+    book = xlrd.open_workbook('csvfiles/'+company+'.xls')
+    sheet  = book.sheet_by_name('Data Sheet')
+#     headers  = sheet.row_slice(rowx=15,
+#                                 start_colx=0,
+#                                 end_colx=11)
+    sales  = sheet.row_slice(rowx=16,
+                                start_colx=6,
+                                end_colx=11)
+    net_profit  = sheet.row_slice(rowx=29,
+                                start_colx=6,
+                                end_colx=11)
+    print sales,net_profit
+    count = 0
+    for s in sales:
+        salevalue = s.value
+        salesFlag = False
+        if count!=0 and salevalue>sales[count-1].value :
+            salesFlag = True
+        else:
+            salesFlag = False
+        count+=1
+    count = 0
+    for p in net_profit:
+        profitValue = p.value
+        profitFlag = False
+        
+        if count!=0 and profitValue>net_profit[count-1].value:
+            profitFlag = True
+        else:
+            profitFlag = False
+        count+=1
+    
+    quarterSalesPrevious = sheet.cell(41,6).value
+    quarterSalesCurrent = sheet.cell(41,10).value
+    quarterNetProfitPrevious = sheet.cell(48,6).value
+    quarterNetProfitCurrent = sheet.cell(48,10).value
+    
+    if salesFlag and profitFlag and quarterSalesCurrent>quarterSalesPrevious and quarterNetProfitCurrent> quarterNetProfitPrevious:
+        return True
+    else:
+        return False
+    
+    ## Get all 'tr'
    
    
 def getscreener():
