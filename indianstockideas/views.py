@@ -98,8 +98,8 @@ def executescript(type):
                                     ctohigh = screencol[12],
                                     ftw_index = screencol[13],
                                     cash_from_operations_last_year =screencol[14], 
-                                    cash_from_operations_preceding_year = screencol[15],
-                                    company_url = screencol[0] )
+                                    cash_from_operations_preceding_year = screencol[15])
+                                    
                 obj.save()
     elif type == "Fetch Data":
         obj = NSESetting.objects.filter(active=True)[0]
@@ -145,7 +145,7 @@ def executescript(type):
             for screen in screens:
                 if screen.symbol == companyStock[0]:
                     print screen.symbol
-                    if downloadExcel(screen.company_url,screen.symbol):
+                    if downloadExcel('',screen.symbol):
                         #print companyStock
                     #if gridAnalysis(screen.symbol):
                         saveStocks(companyStock,screen)
@@ -219,6 +219,7 @@ def getnse(screens):
 	    			
 def downloadExcel(url,company = 'SATIN'):
     print url,"urllllllllll"
+    url = "/company/"+company
     obj = ScreenerSetting.objects.filter(active=True)[0]
     session_requests = requests.session()
     result = session_requests.get(obj.login_url)

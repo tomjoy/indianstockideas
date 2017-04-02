@@ -72,7 +72,7 @@ class ScreenerData(models.Model):
     ftw_index = models.CharField(max_length=100,blank = True,null = True)
     cash_from_operations_last_year = models.CharField(max_length=100,blank = True,null = True)
     cash_from_operations_preceding_year = models.CharField(max_length=100,blank = True,null = True)
-    company_url = models.CharField(max_length=150,blank = True,null = True)
+    #company_url = models.CharField(max_length=150,blank = True,null = True)
     executed_date = models.DateField(auto_now=True)
     def __str__(self):
         return self.symbol
