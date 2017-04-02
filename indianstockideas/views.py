@@ -102,7 +102,11 @@ def executescript(type):
         #'2016/NOV/cm08NOV2016bhav.csv.zip
             try:
                 import os
-                os.remove('csvfiles/'+fname)
+                filelist = [ f for f in os.listdir("csvfiles/")]
+                print filelist
+                for f in filelist:
+                    os.remove('csvfiles/'+f)
+                #os.remove('csvfiles/'+fname)
             except:
                 pass
             s=requests.get(url,stream=True)
