@@ -34,6 +34,7 @@ class NSESetting(models.Model):
     date5 = models.DateField('NSE Date5')
     date6 = models.DateField('NSE Date6')
     nse_url = models.URLField(default='https://www.nseindia.com/content/historical/EQUITIES/')
+    formula = models.TextField(max_length=500,default ="f1 = (dc1*1.2)<(dc2);f2 = (dc1*1.2)<(dc3);f3 = (dc1*1.2)<(dc4);f4 = (dc4*0.8)>(dc5);f5 = (dc4*0.9)>(dc6);f6 = (dc1*0.51)<(dc6);formula = f1 and f2 and f3 and f4 and f5 and f6")
     active = models.BooleanField(default = False)
     date = models.DateField(auto_now=True)
     

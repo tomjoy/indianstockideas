@@ -94,21 +94,18 @@ def executescript(type):
     if type=='Run NSE':
         obj = NSESetting.objects.filter(active=True)[0]
         dates = {1:'date1',2:'date2',3:'date3',4:'date4',5:'date5',6:'date6'}
+        import os
+        filelist = [ f for f in os.listdir("csvfiles/")]
+        print filelist
+        for f in filelist:
+            os.remove('csvfiles/'+f)
         for date in dates:
             date = getattr(obj, dates[date])
             nw = date.strftime('%d-%b-%Y').split('-')
             fname = 'cm'+nw[0]+nw[1].upper()+nw[2]+'bhav.csv'
             url = obj.nse_url+nw[2]+'/'+nw[1].upper()+'/'+fname+'.zip'
         #'2016/NOV/cm08NOV2016bhav.csv.zip
-            try:
-                import os
-                filelist = [ f for f in os.listdir("csvfiles/")]
-                print filelist
-                for f in filelist:
-                    os.remove('csvfiles/'+f)
-                #os.remove('csvfiles/'+fname)
-            except:
-                pass
+            
             s=requests.get(url,stream=True)
             v = ZipFile(StringIO(s.content))
             v.extractall('csvfiles/')
@@ -164,11 +161,11 @@ def fetchData():
                             filedict[dates[d]].append(row[0:])
                     count =i
         finalList = []
+        fstring = obj.formula
         obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
         obj.status = "Formulating Nse Data"
         obj.save()
         for row in filedict['date6']:
-            
             dc1 = findCompany(row[0],filedict['date1'])
             dc2 = findCompany(row[0],filedict['date2'])
             dc3 = findCompany(row[0],filedict['date3'])
@@ -177,15 +174,16 @@ def fetchData():
             dc6 = row
             #(C13*1.2<D13),(C13*1.2<E13),(C13*1.2<F13),(F13*0.8>G13),(F13*0.9>H13),(C13*0.51<H13))
             if dc1 and dc2 and dc3 and dc4 and dc5 and dc6:
-                f1 = (float(dc1[5])*1.2)<(float(dc2[5]))
-                f2 = (float(dc1[5])*1.2)<(float(dc3[5]))
-                f3 = (float(dc1[5])*1.2)<(float(dc4[5]))
-                f4 = (float(dc4[5])*0.8)>(float(dc5[5]))
-                f5 = (float(dc4[5])*0.9)>(float(dc6[5]))
-                f6 = (float(dc1[5])*0.51)<(float(dc6[5]))
-                if f1 and f2 and f3 and f4 and f5 and f6:
+                dc1 = float(dc1[5])
+                dc2 = float(dc2[5])
+                dc3 = float(dc3[5])
+                dc4 = float(dc4[5])
+                dc5 = float(dc5[5])
+                dc6 = float(dc6[5])
+                exec(fstring)
+                if formula:
                     finalList.append(row)
-        screens = ScreenerData.objects.all()     
+        screens = ScreenerData.objects.all()    
         FeaturedStocks = []       
         for companyStock in finalList:
             saveNse(companyStock)
@@ -199,9 +197,10 @@ def fetchData():
         obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
         obj.status = "Success"
         obj.save()
-        redirect = '/admin/indianstockideas/indianstockideasaction/'
-        return HttpResponseRedirect(redirect)
+        #redirect = '/admin/indianstockideas/indianstockideasaction/'
+        #return HttpResponseRedirect(redirect)
     except Exception,e:
+        print e
         obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
         obj.status = "Exception: %s"%e
         obj.save()
@@ -227,6 +226,7 @@ def findCompany(company,dateData):
     for i in dateData:
         if str(i[0]).strip()== str(company).strip():
             return i
+        
                     
         
 def saveStocks(companyStock,screen,flag):
