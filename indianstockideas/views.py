@@ -12,9 +12,10 @@ import json,requests
 from lxml import html
 from StringIO import StringIO
 from zipfile import ZipFile
-from .models import NSESetting,ScreenerSetting, ScreenerData, FeaturedStock
+from .models import NSESetting,ScreenerSetting, ScreenerData, FeaturedStock, NseData, IndianStockIdeasAction
 from lxml import etree
 import urllib,xlrd
+from multiprocessing import Process
 
 class IndexView(generic.TemplateView):
     template_name = 'indianstockideas/index2.html'
@@ -22,23 +23,53 @@ class IndexView(generic.TemplateView):
        
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        commondata = FeaturedStock.objects.all()
+        commondata = FeaturedStock.objects.filter(recommended = True)
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
 	      'commondata':list(commondata.values_list()),   
 	      'headers':['SYMBOL','SERIES','OPEN','HIGH','LOW','CLOSE','LAST','PREVCLOSE','TOTTRDQTY','TOTTRDVAL','TIMESTAMP','TOTALTRADES','ISIN', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
 	    			"YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Date"]           
+	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured", "Date"]           
 	    })
+        return context
+    
+class AllDataView(generic.TemplateView):
+    template_name = 'indianstockideas/index2.html'
+    
+       
+    def get_context_data(self, **kwargs):
+        context = super(AllDataView, self).get_context_data(**kwargs)
+        commondata = FeaturedStock.objects.all()
+        #print downloadExcel('/company/SATIN/'),"flag"
+        context.update({
+          'commondata':list(commondata.values_list()),   
+          'headers':['SYMBOL','SERIES','OPEN','HIGH','LOW','CLOSE','LAST','PREVCLOSE','TOTTRDQTY','TOTTRDVAL','TIMESTAMP','TOTALTRADES','ISIN', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
+                    "YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
+                     "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured","Date"]           
+        })
+        return context
+    
+class NseDataView(generic.TemplateView):
+    template_name = 'indianstockideas/index2.html'
+    
+       
+    def get_context_data(self, **kwargs):
+        context = super(NseDataView, self).get_context_data(**kwargs)
+        commondata = NseData.objects.all()
+        #print downloadExcel('/company/SATIN/'),"flag"
+        context.update({
+          'commondata':list(commondata.values_list()),   
+          'headers':['SYMBOL','SERIES','OPEN','HIGH','LOW','CLOSE','LAST','PREVCLOSE','TOTTRDQTY','TOTTRDVAL','TIMESTAMP','TOTALTRADES','ISIN' ]           
+        })
         return context
 
 
-class FeaturedView(generic.TemplateView):
+class ScreenerView(generic.TemplateView):
     template_name = 'indianstockideas/index3.html'
     
        
     def get_context_data(self, **kwargs):
-        context = super(FeaturedView, self).get_context_data(**kwargs)
+        context = super(ScreenerView, self).get_context_data(**kwargs)
         commondata = ScreenerData.objects.all()
         context.update({
           'commondata':list(commondata.values_list()),   
@@ -74,7 +105,6 @@ def executescript(type):
                 os.remove('csvfiles/'+fname)
             except:
                 pass
-            print url
             s=requests.get(url,stream=True)
             v = ZipFile(StringIO(s.content))
             v.extractall('csvfiles/')
@@ -82,7 +112,7 @@ def executescript(type):
         screens = getscreener()
         ScreenerData.objects.all().delete()
         for i,screencol in enumerate(screens):
-                company = screencol[0].split('/company/')[1].strip('/')
+                company = screencol[0].split('/')[2]
                 obj = ScreenerData(
                                     symbol = company,
                                     current_price = screencol[2],
@@ -102,6 +132,15 @@ def executescript(type):
                                     
                 obj.save()
     elif type == "Fetch Data":
+        obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
+        obj.status = "In Progress"
+        obj.save()
+        import thread
+        thread.start_new_thread( fetchData,() )
+        #p.join()
+        
+def fetchData():
+    try:
         obj = NSESetting.objects.filter(active=True)[0]
         dates = {1:'date1',2:'date2',3:'date3',4:'date4',5:'date5',6:'date6'}
         import csv
@@ -121,6 +160,9 @@ def executescript(type):
                             filedict[dates[d]].append(row[0:])
                     count =i
         finalList = []
+        obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
+        obj.status = "Formulating Nse Data"
+        obj.save()
         for row in filedict['date6']:
             
             dc1 = findCompany(row[0],filedict['date1'])
@@ -142,17 +184,40 @@ def executescript(type):
         screens = ScreenerData.objects.all()     
         FeaturedStocks = []       
         for companyStock in finalList:
+            saveNse(companyStock)
             for screen in screens:
                 if screen.symbol == companyStock[0]:
-                    print screen.symbol
+                    found = False
                     if downloadExcel('',screen.symbol):
-                        #print companyStock
-                    #if gridAnalysis(screen.symbol):
-                        saveStocks(companyStock,screen)
+                        found = True
+                    saveStocks(companyStock,screen,found)
                     #FeaturedStocks.append(companyStock+1)
+        obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
+        obj.status = "Success"
+        obj.save()
+        redirect = '/admin/indianstockideas/indianstockideasaction/'
+        return HttpResponseRedirect(redirect)
+    except Exception,e:
+        obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
+        obj.status = "Exception: %s"%e
+        obj.save()
                     
-def gridAnalysis(screen): 
-    return True              
+def saveNse(companyStock): 
+    obj = NseData(
+                symbol = companyStock[0],
+                series = companyStock[1],
+                open = companyStock[2],
+                high = companyStock[3],
+                low = companyStock[4],
+                close = companyStock[5],
+                last = companyStock[6],
+                prevclose = companyStock[7],
+                tottrdqty = companyStock[8],
+                tottrdval = companyStock[9],
+                timestamp = companyStock[10],
+                totaltrades = companyStock[11],
+                isin = companyStock[12])
+    obj.save()              
                 
 def findCompany(company,dateData):
     for i in dateData:
@@ -160,7 +225,7 @@ def findCompany(company,dateData):
             return i
                     
         
-def saveStocks(companyStock,screen):
+def saveStocks(companyStock,screen,flag):
     obj = FeaturedStock(
                     symbol = companyStock[0],
                     series = companyStock[1],
@@ -188,7 +253,8 @@ def saveStocks(companyStock,screen):
                     ctohigh = screen.ctohigh,
                     ftw_index = screen.ftw_index,
                     cash_from_operations_last_year = screen.cash_from_operations_last_year,
-                    cash_from_operations_preceding_year = screen.cash_from_operations_preceding_year)     
+                    cash_from_operations_preceding_year = screen.cash_from_operations_preceding_year,
+                    recommended = flag)     
     obj.save()   
     
 def getnse(screens):
@@ -204,7 +270,6 @@ def getnse(screens):
     commonmatches = []
     with open('csvfiles/'+fname) as f:
         for index,line in enumerate(f):
-            print index
             if index == 0:
                 continue
             columns = line.split(',')
@@ -218,7 +283,6 @@ def getnse(screens):
 	return commonmatches
 	    			
 def downloadExcel(url,company = 'SATIN'):
-    print url,"urllllllllll"
     url = "/company/"+company
     obj = ScreenerSetting.objects.filter(active=True)[0]
     session_requests = requests.session()
@@ -252,26 +316,15 @@ def downloadExcel(url,company = 'SATIN'):
     net_profit  = sheet.row_slice(rowx=29,
                                 start_colx=6,
                                 end_colx=11)
-    print sales,net_profit
-    count = 0
-    for s in sales:
-        salevalue = s.value
+   
+    if sales[0].value<sales[1].value<sales[2].value<sales[3].value<sales[4].value:
+        salesFlag = True
+    else:
         salesFlag = False
-        if count!=0 and salevalue>sales[count-1].value :
-            salesFlag = True
-        else:
-            salesFlag = False
-        count+=1
-    count = 0
-    for p in net_profit:
-        profitValue = p.value
+    if net_profit[0].value<net_profit[1].value<net_profit[2].value<net_profit[3].value<net_profit[4].value:
+        profitFlag = True
+    else:
         profitFlag = False
-        
-        if count!=0 and profitValue>net_profit[count-1].value:
-            profitFlag = True
-        else:
-            profitFlag = False
-        count+=1
     
     quarterSalesPrevious = sheet.cell(41,6).value
     quarterSalesCurrent = sheet.cell(41,10).value

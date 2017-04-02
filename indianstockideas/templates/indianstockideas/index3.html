@@ -32,9 +32,11 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav" style="width:80%">
-           <li ><a href="/">Recommended+</a></li>
-            <li class="active"><a href="/featured/">Featured</a></li>
-            <li><a href="#">Trades</a></li>
+           <li class=""><a href="/">Featured+</a></li>
+           <li class=""><a href="/recommended/">Recomended</a></li>
+           
+            <li class="active"><a href="/screenerdata/">ScreenerData</a></li>
+            <li><a href="/nsedata/">NseData</a></li>
             <li class="dropdown" style="float:right">
               <a href="http://getbootstrap.com/examples/theme/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{request.user}} <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -65,8 +67,16 @@
     {%for rowdata in commondata%}
       <tr>
       
+       <td>
+       {{ forloop.counter }}
+       </td>
+    
       {% for i in rowdata%}
+       {% if forloop.first %}
+       
+    {% else %}
         <td>{{i}}</td>
+        {% endif %}
         {% endfor%}
       </tr>
       {% endfor%}

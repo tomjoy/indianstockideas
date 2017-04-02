@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import NSESetting,ScreenerSetting,IndianStockIdeasAction,FeaturedStock,ScreenerData
+from .models import NSESetting,ScreenerSetting,IndianStockIdeasAction,FeaturedStock,ScreenerData, NseData
 from .views import executescript
 import datetime
 def fetchData(modeladmin, request, queryset):
@@ -9,11 +9,12 @@ def fetchData(modeladmin, request, queryset):
 fetchData.short_description = "Run Selected Job"
   
 class IndianStockIdeasActionAdmin(admin.ModelAdmin):
-    list_display = ('action', 'executed_date')
+    list_display = ('action','status', 'executed_date')
     actions = [fetchData]
   
 admin.site.register(NSESetting)
 admin.site.register(FeaturedStock)
 admin.site.register(ScreenerSetting)
 admin.site.register(ScreenerData)
+admin.site.register(NseData)
 admin.site.register(IndianStockIdeasAction, IndianStockIdeasActionAdmin)

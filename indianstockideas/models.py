@@ -49,6 +49,7 @@ class IndianStockIdeasAction(models.Model):
     )
     
     action = models.CharField(max_length=50,choices = CHOICES, default = 'Run NSE')
+    status = models.CharField(max_length=100,blank = True,null = True,default='Success')
     executed_date = models.DateTimeField(auto_now=True)
     
     def __str__(self):
@@ -74,6 +75,23 @@ class ScreenerData(models.Model):
     cash_from_operations_preceding_year = models.CharField(max_length=100,blank = True,null = True)
     #company_url = models.CharField(max_length=150,blank = True,null = True)
     executed_date = models.DateField(auto_now=True)
+    def __str__(self):
+        return self.symbol
+    
+class NseData(models.Model):
+    symbol = models.CharField(max_length=100,blank = True,null = True)
+    series = models.CharField(max_length=100,blank = True,null = True)
+    open = models.CharField(max_length=100,blank = True,null = True)
+    high = models.CharField(max_length=100,blank = True,null = True)
+    low = models.CharField(max_length=100,blank = True,null = True)
+    close = models.CharField(max_length=100,blank = True,null = True)
+    last = models.CharField(max_length=100,blank = True,null = True)
+    prevclose = models.CharField(max_length=100,blank = True,null = True)
+    tottrdqty = models.CharField(max_length=100,blank = True,null = True)
+    tottrdval = models.CharField(max_length=100,blank = True,null = True)
+    timestamp = models.CharField(max_length=100,blank = True,null = True)
+    totaltrades = models.CharField(max_length=100,blank = True,null = True)
+    isin = models.CharField(max_length=100,blank = True,null = True)
     def __str__(self):
         return self.symbol
     
@@ -106,6 +124,7 @@ class FeaturedStock(models.Model):
     ftw_index = models.CharField(max_length=100,blank = True,null = True)
     cash_from_operations_last_year = models.CharField(max_length=100,blank = True,null = True)
     cash_from_operations_preceding_year = models.CharField(max_length=100,blank = True,null = True)
+    recommended = models.BooleanField(default = False)
     executed_date = models.DateField(auto_now=True)
     
     def __str__(self):
