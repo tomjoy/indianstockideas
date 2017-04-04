@@ -314,31 +314,42 @@ def downloadExcel(url,company = 'SATIN'):
 #     headers  = sheet.row_slice(rowx=15,
 #                                 start_colx=0,
 #                                 end_colx=11)
-    sales  = sheet.row_slice(rowx=16,
+    salesData  = sheet.row_slice(rowx=16,
                                 start_colx=6,
                                 end_colx=11)
-    net_profit  = sheet.row_slice(rowx=29,
+    netProfitData  = sheet.row_slice(rowx=29,
                                 start_colx=6,
                                 end_colx=11)
+    
+    salesPreviousQuarter = sheet.cell(41,6).value
+    salesCurrentQuarter = sheet.cell(41,10).value
+    netProfitPreviousQuarter = sheet.cell(48,6).value
+    netProfitCurrentQuarter = sheet.cell(48,10).value
+    
+    sales = [i.value for i in salesData]
+    netProfit = [i.value for i in netProfitData]
+    dataQuery = obj.datasheet_query
+    exec(dataQuery)
+#     salesFlag = sales[0]<sales[1]<sales[2]<sales[3]<sales[4]
+#     profitFlag = netProfit[0]<netProfit[1]<netProfit[2]<netProfit[3]<netProfit[4]
+#     featured = salesFlag and profitFlag and salesCurrentQuarter>salesPreviousQuarter and netProfitCurrentQuarter> netProfitPreviousQuarter
+    return featured
    
-    if sales[0].value<sales[1].value<sales[2].value<sales[3].value<sales[4].value:
-        salesFlag = True
-    else:
-        salesFlag = False
-    if net_profit[0].value<net_profit[1].value<net_profit[2].value<net_profit[3].value<net_profit[4].value:
-        profitFlag = True
-    else:
-        profitFlag = False
+#     if sales[0]<sales[1]<sales[2]<sales[3]<sales[4]:
+#         salesFlag = True
+#     else:
+#         salesFlag = False
+#     if netProfit[0]<netProfit[1]<netProfit[2]<netProfit[3]<netProfit[4]:
+#         profitFlag = True
+#     else:
+#         profitFlag = False
     
-    quarterSalesPrevious = sheet.cell(41,6).value
-    quarterSalesCurrent = sheet.cell(41,10).value
-    quarterNetProfitPrevious = sheet.cell(48,6).value
-    quarterNetProfitCurrent = sheet.cell(48,10).value
     
-    if salesFlag and profitFlag and quarterSalesCurrent>quarterSalesPrevious and quarterNetProfitCurrent> quarterNetProfitPrevious:
-        return True
-    else:
-        return False
+    
+#     if salesFlag and profitFlag and salesCurrentQuarter>salesPreviousQuarter and netProfitCurrentQuarter> netProfitPreviousQuarter:
+#         return True
+#     else:
+#         return False
     
     ## Get all 'tr'
    
