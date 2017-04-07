@@ -36,6 +36,7 @@
            
             <li class="{% if 'screenerdata' in request.path %}active{% endif %}"><a href="/screenerdata/">ScreenerData</a></li>
             <li class="{% if 'nsedata' in request.path %}active{% endif %}"><a href="/nsedata/">NseData</a></li>
+            <li class="{% if 'analysis' in request.path %}active{% endif %}"><a href="/analysis/">AnalysisData</a></li>
             <li class="dropdown" style="float:right">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{request.user}} <span class="caret"></span></a>
               <ul class="dropdown-menu">

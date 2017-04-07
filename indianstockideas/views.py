@@ -49,6 +49,30 @@ class AllDataView(generic.TemplateView):
         })
         return context
     
+    
+class AnalysisView(generic.TemplateView):
+    template_name = 'indianstockideas/index2.html'
+    
+       
+    def get_context_data(self, **kwargs):
+        context = super(AnalysisView, self).get_context_data(**kwargs)
+        commondata = FeaturedStock.objects.filter(recommended = True)
+        analysisData = []
+        for data in commondata:
+            url = "https://www.screener.in/api/company/"
+            resp = requests.get(url=url+data.symbol)
+            jsonData = json.loads(resp.text)
+            current_price = jsonData["warehouse_set"]["current_price"]
+            percentage = ((float(current_price)-float(data.current_price))/float(data.current_price))*100
+            analysis =  percentage>0
+            analysisData.append(["",data.symbol,data.current_price,str(current_price),percentage, analysis])
+            
+        #print downloadExcel('/company/SATIN/'),"flag"
+        context.update({
+          'commondata':analysisData,   
+          'headers':['SYMBOL','FEATURED PRICE',"CURRENT PRICE",'VARIATION','ANALYSIS']})
+        return context
+    
 class NseDataView(generic.TemplateView):
     template_name = 'indianstockideas/index2.html'
     
@@ -229,7 +253,6 @@ def findCompany(company,dateData):
         if str(i[0]).strip()== str(company).strip():
             return i
         
-                    
         
 def saveStocks(companyStock,screen,flag):
     obj = FeaturedStock(
