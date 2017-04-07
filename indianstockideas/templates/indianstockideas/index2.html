@@ -31,7 +31,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav" style="width:80%">
-           <li class="{% if 'recommended' not in request.path and 'screenerdata' not in request.path and 'nsedata' not in request.path  %}active{% endif %}"><a href="/">Featured+</a></li>
+           <li class="{% if 'recommended' not in request.path and 'analysis' not in request.path and 'screenerdata' not in request.path and 'nsedata' not in request.path  %}active{% endif %}"><a href="/">Featured+</a></li>
            <li class="{% if 'recommended' in request.path %}active{% endif %}"><a href="/recommended/">Recomended</a></li>
            
             <li class="{% if 'screenerdata' in request.path %}active{% endif %}"><a href="/screenerdata/">ScreenerData</a></li>
