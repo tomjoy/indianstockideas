@@ -96,7 +96,6 @@ def executescript(type):
         dates = {1:'date1',2:'date2',3:'date3',4:'date4',5:'date5',6:'date6'}
         import os
         filelist = [ f for f in os.listdir("csvfiles/")]
-        print filelist
         for f in filelist:
             os.remove('csvfiles/'+f)
         for date in dates:
@@ -180,7 +179,10 @@ def fetchData():
                 dc4 = float(dc4[5])
                 dc5 = float(dc5[5])
                 dc6 = float(dc6[5])
-                exec(fstring)
+                try:
+                    exec(fstring)
+                except:
+                    formula = False
                 if formula:
                     finalList.append(row)
         screens = ScreenerData.objects.all()    
@@ -329,29 +331,11 @@ def downloadExcel(url,company = 'SATIN'):
     sales = [i.value for i in salesData]
     netProfit = [i.value for i in netProfitData]
     dataQuery = obj.datasheet_query
-    exec(dataQuery)
-#     salesFlag = sales[0]<sales[1]<sales[2]<sales[3]<sales[4]
-#     profitFlag = netProfit[0]<netProfit[1]<netProfit[2]<netProfit[3]<netProfit[4]
-#     featured = salesFlag and profitFlag and salesCurrentQuarter>salesPreviousQuarter and netProfitCurrentQuarter> netProfitPreviousQuarter
+    try:
+        exec(dataQuery)
+    except:
+        featured = False
     return featured
-   
-#     if sales[0]<sales[1]<sales[2]<sales[3]<sales[4]:
-#         salesFlag = True
-#     else:
-#         salesFlag = False
-#     if netProfit[0]<netProfit[1]<netProfit[2]<netProfit[3]<netProfit[4]:
-#         profitFlag = True
-#     else:
-#         profitFlag = False
-    
-    
-    
-#     if salesFlag and profitFlag and salesCurrentQuarter>salesPreviousQuarter and netProfitCurrentQuarter> netProfitPreviousQuarter:
-#         return True
-#     else:
-#         return False
-    
-    ## Get all 'tr'
    
    
 def getscreener():
