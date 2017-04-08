@@ -63,9 +63,9 @@ class AnalysisView(generic.TemplateView):
             resp = requests.get(url=url+data.symbol)
             jsonData = json.loads(resp.text)
             current_price = jsonData["warehouse_set"]["current_price"]
-            percentage = ((float(current_price)-float(data.current_price))/float(data.current_price))*100
+            percentage = ((float(current_price)-float(data.close))/float(data.close))*100
             analysis =  percentage>0
-            analysisData.append(["",data.symbol,data.current_price,str(current_price),percentage, analysis])
+            analysisData.append(["",data.symbol,data.close,str(current_price),percentage, analysis])
             
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
