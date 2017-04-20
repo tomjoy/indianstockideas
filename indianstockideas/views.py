@@ -166,10 +166,12 @@ def executescript(type):
 def fetchData():
     try:
         obj = NSESetting.objects.filter(active=True)[0]
+        
         dates = {1:'date1',2:'date2',3:'date3',4:'date4',5:'date5',6:'date6'}
         import csv
         count = 0
         filedict={}
+        NseData.objects.all().delete()
         FeaturedStock.objects.all().delete()
         for d in dates:
             date = getattr(obj, dates[d])
