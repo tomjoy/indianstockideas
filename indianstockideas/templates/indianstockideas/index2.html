@@ -75,7 +75,15 @@
       {% if forloop.first %}
        
     {% else %}
-        <td>{{i}}</td>
+        <td>
+        {% if i == True %}
+        <span class="label label-success">True</span>
+        {%elif i == False %}
+        <span class="label label-danger">False</span>
+        {%else%}
+        {{i}}
+        {%endif%}
+        </td>
         {% endif %}
         {% endfor%}
         
