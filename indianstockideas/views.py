@@ -70,7 +70,7 @@ class AnalysisView(generic.TemplateView):
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
           'commondata':analysisData,   
-          'headers':['SYMBOL','FEATURED PRICE',"CURRENT PRICE",'VARIATION','ANALYSIS']})
+          'headers':['SYMBOL','FEATURED PRICE',"CURRENT PRICE",'VARIATION %','ANALYSIS']})
         return context
     
 class NseDataView(generic.TemplateView):
