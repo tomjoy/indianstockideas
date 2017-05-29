@@ -150,9 +150,10 @@ def executescript(type):
                                     sales_growth_5years = screencol[9],
                                     sales_growth_3years = "NA",
                                     ctohigh = screencol[10],
-                                    ftw_index = screencol[11],
-                                    cash_from_operations_last_year =screencol[12], 
-                                    cash_from_operations_preceding_year = screencol[13])
+                                    ctolow = screencol[11],
+                                    ftw_index = screencol[12],
+                                    cash_from_operations_last_year =screencol[13], 
+                                    cash_from_operations_preceding_year = screencol[14])
                                     
                 obj.save()
     elif type == "Fetch Data":
