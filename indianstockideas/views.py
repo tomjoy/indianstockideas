@@ -24,7 +24,7 @@ class IndexView(generic.TemplateView):
        
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        commondata = FeaturedStock.objects.filter(recommended = True)
+        commondata = FeaturedStock.objects.filter(recommended = True).order_by('symbol')
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
 	      'commondata':list(commondata.values_list()),   
@@ -37,7 +37,7 @@ class IndexView(generic.TemplateView):
 class PublishView(generic.TemplateView):
     def get(self, request,symbol):
         fdata = FeaturedStock.objects.get(recommended = True,symbol = symbol)
-        pubData = PublishedData(stockname = symbol,price = fdata.close)
+        pubData = PublishedData(stockname = symbol,price = fdata.close).order_by('stockname')
         pubData.save()
         fdata.published = True
         fdata.save()
@@ -49,7 +49,7 @@ class AllDataView(generic.TemplateView):
        
     def get_context_data(self, **kwargs):
         context = super(AllDataView, self).get_context_data(**kwargs)
-        commondata = FeaturedStock.objects.all()
+        commondata = FeaturedStock.objects.all().order_by('symbol')
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
           'commondata':list(commondata.values_list()),   
@@ -75,7 +75,6 @@ class AnalysisView(generic.TemplateView):
             current_price = jsonData["warehouse_set"]["current_price"]
             percentage = ((float(current_price)-float(data.price))/float(data.price))*100
             analysis =  percentage>0
-            print ["",data.stockname,data.price,str(current_price),percentage, analysis]
             analysisData.append(["",data.stockname,data.price,str(current_price),percentage, analysis])
             
         #print downloadExcel('/company/SATIN/'),"flag"

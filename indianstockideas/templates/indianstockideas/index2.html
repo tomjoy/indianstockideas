@@ -77,7 +77,7 @@
       {% for i in rowdata|slice:"14:"%}
 
         <td>
-        {%if forloop.counter == 23 %}{{i}}
+        {%if forloop.counter == 23 %}
         {% if i == True%}
         <a class="btn btn-default btn-xs disabled">Publish</a>
         {%elif i == False %}
