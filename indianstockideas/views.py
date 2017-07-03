@@ -43,6 +43,15 @@ class PublishView(generic.TemplateView):
         fdata.save()
         return HttpResponseRedirect("/")
     
+class UnPublishView(generic.TemplateView):
+    def get(self, request,symbol):
+        fdata = FeaturedStock.objects.filter(recommended = True,symbol = symbol)
+        if fdata:
+            fdata[0].published = False
+            fdata[0].save()
+        pubData = PublishedData.objects.get(stockname = symbol).delete()
+        return HttpResponseRedirect("/")
+    
 class AllDataView(generic.TemplateView):
     template_name = 'indianstockideas/index2.html'
     
@@ -80,7 +89,7 @@ class AnalysisView(generic.TemplateView):
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
           'commondata':analysisData,   
-          'headers':['SYMBOL','FEATURED PRICE',"CURRENT PRICE",'VARIATION %','ANALYSIS']})
+          'headers':['Symbol','Featured Price',"Current Price",'Variation %','Analysis','Action']})
         return context
     
 class NseDataView(generic.TemplateView):
