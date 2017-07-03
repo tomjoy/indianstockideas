@@ -16,6 +16,7 @@ from .models import NSESetting, MoneyControlMapping, PublishedData, MutualFundHo
 from lxml import etree
 import urllib,xlrd
 from multiprocessing import Process
+#test
 
 class IndexView(generic.TemplateView):
     template_name = 'indianstockideas/index2.html'
