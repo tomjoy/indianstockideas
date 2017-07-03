@@ -37,7 +37,7 @@ class IndexView(generic.TemplateView):
 class PublishView(generic.TemplateView):
     def get(self, request,symbol):
         fdata = FeaturedStock.objects.get(recommended = True,symbol = symbol)
-        pubData = PublishedData(stockname = symbol,price = fdata.close).order_by('stockname')
+        pubData = PublishedData(stockname = symbol,price = fdata.close)
         pubData.save()
         fdata.published = True
         fdata.save()
@@ -66,7 +66,7 @@ class AnalysisView(generic.TemplateView):
        
     def get_context_data(self, **kwargs):
         context = super(AnalysisView, self).get_context_data(**kwargs)
-        commondata = PublishedData.objects.all()
+        commondata = PublishedData.objects.all().order_by('stockname')
         analysisData = []
         for data in commondata:
             url = "https://www.screener.in/api/company/"
