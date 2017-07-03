@@ -157,5 +157,8 @@ USERNAME = "gittopaul2@gmail.com"
 PASSWORD = "a12345"
 
 SCREENER_LOGIN_URL = "https://www.screener.in/login/"
+SCREENER_API = "https://www.screener.in/api/company/"
 SCREENER_URL = "https://www.screener.in/api/screens/query/?query=Current+ratio+%3E+1.2+AND%0D%0AEPS+%3E+EPS+last+year+AND%0D%0ASales+last+year+%3E+Sales+preceding+year+AND%0D%0ANet+Profit+last+year+%3E+Net+Profit+preceding+year+AND%0D%0AMarket+Capitalization+%3E+5+AND%0D%0ANet+Profit++%3E+10+AND%0D%0ANet+Profit+last+year+%3E+5+AND%0D%0Acurrenttohigh+%3C+81"
 NSE_URL = 'https://www.nseindia.com/content/historical/EQUITIES/2016/NOV/cm08NOV2016bhav.csv.zip'
+MONEYCONTROL_URL = 'http://www.moneycontrol.com/stocks/marketstats/hidivyields.php?optex=NSE&indcode=$$&group=All'
+MONEYCONTROL_FUNDS  = 'http://www.moneycontrol.com/mf/user_scheme/mfholddetail_sec.php?sc_did=$$'
