@@ -78,11 +78,19 @@
 
         <td>
         {%if forloop.counter == 23 %}
+        {% if publish%}
         {% if i == True%}
         <a class="btn btn-default btn-xs disabled">Published</a>
         {%elif i == False %}
         <a class="btn btn-success btn-xs" href ="/publish/{{rowdata.1}}" >Publish</a>
         {% endif %}
+      {% else%}
+      {% if i == True %}
+        <span class="label label-success">True</span>
+        {%elif i == False %}
+        <span class="label label-danger">False</span>
+      {%endif%}
+       {%endif%}
         {% elif i == True %}
         <span class="label label-success">True</span>
         {%elif i == False %}

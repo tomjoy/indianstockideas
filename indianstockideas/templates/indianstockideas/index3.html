@@ -87,12 +87,14 @@
         </td>
         {% endif %}
         {% endfor%}
+        {%if publish%}
         <td>
        
         <a class="btn btn-success btn-xs" href ="/unpublish/{{rowdata.1}}" >UnPublish</a>
        
         
         </td>
+        {% endif%}
       </tr>
       {% endfor%}
     </tbody>

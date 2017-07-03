@@ -28,6 +28,7 @@ class IndexView(generic.TemplateView):
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
 	      'commondata':list(commondata.values_list()),   
+          'publish': True,
 	      'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
 	    			"YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
 	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4','MF Analysis', "Publish","Executed Date"]           
@@ -61,10 +62,11 @@ class AllDataView(generic.TemplateView):
         commondata = FeaturedStock.objects.all().order_by('symbol')
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
-          'commondata':list(commondata.values_list()),   
-          'headers':['SYMBOL','SERIES','OPEN','HIGH','LOW','CLOSE','LAST','PREVCLOSE','TOTTRDQTY','TOTTRDVAL','TIMESTAMP','TOTALTRADES','ISIN', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
+          'commondata':list(commondata.values_list()), 
+          'publish': False,  
+          'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
                     "YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-                     "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured","Date"]           
+                     "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4','MF Analysis','Published',"Executed Date"]           
         })
         return context
     
@@ -89,11 +91,12 @@ class AnalysisView(generic.TemplateView):
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
           'commondata':analysisData,   
+          'publish':True,
           'headers':['Symbol','Featured Price',"Current Price",'Variation %','Analysis','Action']})
         return context
     
 class NseDataView(generic.TemplateView):
-    template_name = 'indianstockideas/index2.html'
+    template_name = 'indianstockideas/index3.html'
     
        
     def get_context_data(self, **kwargs):
