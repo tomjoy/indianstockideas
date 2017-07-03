@@ -12,7 +12,7 @@ import json,requests
 from lxml import html
 from StringIO import StringIO
 from zipfile import ZipFile
-from .models import NSESetting,ScreenerSetting, ScreenerData, FeaturedStock, NseData, IndianStockIdeasAction
+from .models import NSESetting, MoneyControlMapping, PublishedData, MutualFundHolding, ScreenerSetting, ScreenerData, FeaturedStock, NseData, IndianStockIdeasAction
 from lxml import etree
 import urllib,xlrd
 from multiprocessing import Process
@@ -27,11 +27,20 @@ class IndexView(generic.TemplateView):
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
 	      'commondata':list(commondata.values_list()),   
-	      'headers':['SYMBOL','SERIES','OPEN','HIGH','LOW','CLOSE','LAST','PREVCLOSE','TOTTRDQTY','TOTTRDVAL','TIMESTAMP','TOTALTRADES','ISIN', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
+	      'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
 	    			"YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured", "Date"]           
+	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4','MF Analysis', "Publish","Executed Date"]           
 	    })
         return context
+    
+class PublishView(generic.TemplateView):
+    def get(self, request,symbol):
+        fdata = FeaturedStock.objects.get(recommended = True,symbol = symbol)
+        pubData = PublishedData(stockname = symbol,price = fdata.close)
+        pubData.save()
+        fdata.published = True
+        fdata.save()
+        return HttpResponseRedirect("/")
     
 class AllDataView(generic.TemplateView):
     template_name = 'indianstockideas/index2.html'
@@ -51,21 +60,22 @@ class AllDataView(generic.TemplateView):
     
     
 class AnalysisView(generic.TemplateView):
-    template_name = 'indianstockideas/index2.html'
+    template_name = 'indianstockideas/index3.html'
     
        
     def get_context_data(self, **kwargs):
         context = super(AnalysisView, self).get_context_data(**kwargs)
-        commondata = FeaturedStock.objects.filter(recommended = True)
+        commondata = PublishedData.objects.all()
         analysisData = []
         for data in commondata:
             url = "https://www.screener.in/api/company/"
-            resp = requests.get(url=url+data.symbol)
+            resp = requests.get(url=url+data.stockname)
             jsonData = json.loads(resp.text)
             current_price = jsonData["warehouse_set"]["current_price"]
-            percentage = ((float(current_price)-float(data.close))/float(data.close))*100
+            percentage = ((float(current_price)-float(data.price))/float(data.price))*100
             analysis =  percentage>0
-            analysisData.append(["",data.symbol,data.close,str(current_price),percentage, analysis])
+            print ["",data.stockname,data.price,str(current_price),percentage, analysis]
+            analysisData.append(["",data.stockname,data.price,str(current_price),percentage, analysis])
             
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
@@ -109,6 +119,104 @@ class ScreenerView(generic.TemplateView):
 #         # check if there is some video onsite
 #         
 #         return HttpResponse(getscreener())
+
+def moneycontrolfunding():
+    featured = FeaturedStock.objects.filter(recommended = True)
+    MutualFundHolding.objects.all().delete()
+    for obj in featured:
+        print obj,"ddddddddd"
+        
+        symbol = obj.symbol
+        print symbol,"second"
+        
+        control = MoneyControlMapping.objects.get(stockname=symbol+" ")
+        
+        mutualfundcode = control.urlsplit3
+        url = settings.MONEYCONTROL_FUNDS
+        url = url.replace('$$',str(mutualfundcode).strip())
+        print url
+        web = urllib.urlopen(url)
+        s = web.read()
+         
+        html = etree.HTML(s)
+      
+        span_nodes = html.xpath('//div[@id="div_0"]/div/table[@class="tblfund2"]/tr[last()]//text()')
+        q,q1,q2,q3,q4 = span_nodes[4],span_nodes[7],span_nodes[9],span_nodes[11],span_nodes[13]
+        f_obj = FeaturedStock.objects.get(recommended = True,symbol = symbol)
+        if int(q.replace(',',''))>int(q1.replace(',',''))*1.2:
+            f_obj.mf_flag = True
+            mf_obj = MutualFundHolding(
+                            symbol = obj.symbol,
+                            current_price = obj.current_price,
+                            price_to_earning = obj.price_to_earning,
+                            market_capitalization = obj.market_capitalization, 
+                            yoy_quarterly_profit_growth = obj.yoy_quarterly_profit_growth,
+                            yoy_quarterly_sales_growth = obj.yoy_quarterly_sales_growth,
+                            net_profit = obj.net_profit,
+                            profit_growth_3years = "NA",
+                            profit_growth_5years = obj.profit_growth_5years,
+                            sales_growth_5years = obj.sales_growth_5years,
+                            sales_growth_3years = "NA",
+                            ctohigh = obj.ctohigh,
+                            ctolow = obj.ctolow,
+                            ftw_index = obj.ftw_index,
+                            cash_from_operations_last_year =obj.cash_from_operations_last_year, 
+                            cash_from_operations_preceding_year = obj.cash_from_operations_preceding_year,
+                            quarter_mf = q,
+                            quarter_1_mf=q1,
+                            quarter_2_mf=q2,
+                            quarter_3_mf=q3,
+                            quarter_4_mf=q4)
+                                    
+            mf_obj.save()
+        else:
+            f_obj.mf_flag = False
+        f_obj.quarter_mf = q
+        f_obj.quarter_1_mf=q1
+        f_obj.quarter_2_mf=q2
+        f_obj.quarter_3_mf=q3
+        f_obj.quarter_4_mf=q4
+        f_obj.save()
+            
+            
+          
+    obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
+    obj.status = "Completed Fetching data from Funds"
+    obj.save()      
+        
+
+def moneyControlMapping():
+    MoneyControlMapping.objects.all().delete()
+    url = settings.MONEYCONTROL_URL
+    for i in range(1,113):
+        url = url.replace('$$',str(i))
+        MONEYCONTROL_URL = 'http://www.moneycontrol.com/stocks/marketstats/hidivyields.php?optex=NSE&indcode='+str(i)+'&group=All'
+        web = urllib.urlopen(MONEYCONTROL_URL)
+        s = web.read()
+         
+        html = etree.HTML(s)
+        
+        span_nodes = html.xpath('//span[@class="gld13 disin"]')
+       
+        stock_urls = [span.xpath('a')[0].get('href') for span in span_nodes]
+        for url in stock_urls:
+            
+            web = urllib.urlopen(url)
+            s = web.read()
+         
+            html = etree.HTML(s)
+            div_nodes = html.xpath('//div[@class="FL gry10"]//text()')
+            #print div_nodes[7],div_nodes[2].split(': ')[1],url,url.split('/')[5],url.split('/')[6],url.split('/')[7]
+            mcontrol = MoneyControlMapping(stockname = div_nodes[2].split(': ')[1],sector = div_nodes[7],
+                    stockurl = url,urlsplit1 =url.split('/')[5], 
+                    urlsplit2 =url.split('/')[6],urlsplit3 = url.split('/')[7])
+            mcontrol.save() 
+        obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
+        obj.status = "Fetching %s data"%str(i)
+        obj.save()
+    obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
+    obj.status = "Completed Fetching data from Moneycontrol"
+    obj.save()                       
     
 def logout_view(request):
     logout(request)
@@ -162,7 +270,20 @@ def executescript(type):
         obj.save()
         import thread
         thread.start_new_thread( fetchData,() )
-        #p.join()
+    elif type == "Run MoneyControl":
+        obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
+        obj.status = "In Progress"
+        obj.save()
+        import thread
+        thread.start_new_thread( moneyControlMapping,() )
+        
+    elif "Run MoneyControl MutualFund":
+        obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
+        obj.status = "In Progress"
+        obj.save()
+        moneycontrolfunding()
+#         import thread
+#         thread.start_new_thread( moneycontrolfunding,() )
         
 def fetchData():
     try:

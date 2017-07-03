@@ -49,7 +49,7 @@
       </div>
     </nav>
 
-    <div class="container theme-showcase" role="main" style="margin-top:80px;overflow:auto;height:540px;">
+    <div class="container theme-showcase" role="main" style="margin-top:80px;">
     <table class="table table-bordered table-striped table-hover">
     <thead class="btn-primary">
       <tr>
@@ -57,8 +57,8 @@
       #
       </th>
         {%for i in headers%}
-        <th>
-        {{i|upper}}
+        <th {% if i == "Executed Date" %}style="min-width:98px"{%endif%}>
+        {{i}}
         </th>
         {% endfor%}
       </tr>
@@ -70,21 +70,29 @@
        <td>
        {{ forloop.counter }}
        </td>
+       <td>
+       {{ rowdata.1 }}
+       </td>
    
-      {% for i in rowdata%}
-      {% if forloop.first %}
-       
-    {% else %}
+      {% for i in rowdata|slice:"14:"%}
+
         <td>
-        {% if i == True %}
+        {%if forloop.counter == 23 %}{{i}}
+        {% if i == True%}
+        <a class="btn btn-default btn-xs disabled">Publish</a>
+        {%elif i == False %}
+        <a class="btn btn-success btn-xs" href ="/publish/{{rowdata.1}}" >Publish</a>
+        {% endif %}
+        {% elif i == True %}
         <span class="label label-success">True</span>
         {%elif i == False %}
         <span class="label label-danger">False</span>
+        
         {%else%}
         {{i}}
         {%endif%}
         </td>
-        {% endif %}
+        
         {% endfor%}
         
       </tr>

@@ -48,6 +48,7 @@ class IndianStockIdeasAction(models.Model):
         ('Run Screener', 'Run Screener'),
         ('Fetch Data', 'Fetch Data'),
         ('Run MoneyControl', 'Run MoneyControl'),
+        ('Run MoneyControl MutualFund', 'Run MoneyControl MutualFund')
     )
     
     action = models.CharField(max_length=50,choices = CHOICES, default = 'Run NSE')
@@ -76,6 +77,50 @@ class ScreenerData(models.Model):
     cash_from_operations_last_year = models.CharField(max_length=100,blank = True,null = True)
     cash_from_operations_preceding_year = models.CharField(max_length=100,blank = True,null = True)
     #company_url = models.CharField(max_length=150,blank = True,null = True)
+    executed_date = models.DateField(auto_now=True)
+    def __str__(self):
+        return self.symbol
+    
+class MoneyControlMapping(models.Model):
+    stockname = models.CharField(max_length=500,blank = True,null = True)
+    sector = models.CharField(max_length=100,blank = True,null = True)
+    stockurl = models.CharField(max_length=1000,blank = True,null = True)
+    urlsplit1 = models.CharField(max_length=100,blank = True,null = True)
+    urlsplit2 = models.CharField(max_length=100,blank = True,null = True)
+    urlsplit3 = models.CharField(max_length=100,blank = True,null = True)
+    executed_date = models.DateField(auto_now=True)
+    def __str__(self):
+        return self.stockname
+    
+class PublishedData(models.Model):
+    stockname = models.CharField(max_length=500,blank = True,null = True)
+    price = models.CharField(max_length=100,blank = True,null = True)
+    executed_date = models.DateField(auto_now=True)
+    def __str__(self):
+        return self.stockname
+    
+class  MutualFundHolding(models.Model):
+    symbol = models.CharField(max_length=100,blank = True,null = True)
+    current_price = models.CharField(max_length=100,blank = True,null = True)
+    price_to_earning = models.CharField(max_length=100,blank = True,null = True)
+    market_capitalization = models.CharField(max_length=100,blank = True,null = True)
+    yoy_quarterly_profit_growth = models.CharField(max_length=100,blank = True,null = True)
+    yoy_quarterly_sales_growth = models.CharField(max_length=100,blank = True,null = True)
+    net_profit = models.CharField(max_length=100,blank = True,null = True)
+    profit_growth_3years = models.CharField(max_length=100,blank = True,null = True)
+    profit_growth_5years = models.CharField(max_length=100,blank = True,null = True)
+    sales_growth_5years = models.CharField(max_length=100,blank = True,null = True)
+    sales_growth_3years = models.CharField(max_length=100,blank = True,null = True)
+    ctohigh = models.CharField(max_length=100,blank = True,null = True)
+    ctolow = models.CharField(max_length=100,blank = True,null = True)
+    ftw_index = models.CharField(max_length=100,blank = True,null = True)
+    cash_from_operations_last_year = models.CharField(max_length=100,blank = True,null = True)
+    cash_from_operations_preceding_year = models.CharField(max_length=100,blank = True,null = True)
+    quarter_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_1_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_2_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_3_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_4_mf = models.CharField(max_length=150,blank = True,null = True)
     executed_date = models.DateField(auto_now=True)
     def __str__(self):
         return self.symbol
@@ -127,6 +172,13 @@ class FeaturedStock(models.Model):
     cash_from_operations_last_year = models.CharField(max_length=100,blank = True,null = True)
     cash_from_operations_preceding_year = models.CharField(max_length=100,blank = True,null = True)
     recommended = models.BooleanField(default = False)
+    quarter_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_1_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_2_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_3_mf = models.CharField(max_length=150,blank = True,null = True)
+    quarter_4_mf = models.CharField(max_length=150,blank = True,null = True)
+    mf_flag = models.BooleanField(default = False)
+    published = models.BooleanField(default = False)
     executed_date = models.DateField(auto_now=True)
     
     def __str__(self):

@@ -35,7 +35,7 @@
            <li class=""><a href="/">Featured+</a></li>
            <li class=""><a href="/recommended/">Recomended</a></li>
            
-            <li class="active"><a href="/screenerdata/">ScreenerData</a></li>
+            <li class="{% if 'screenerdata' in request.path %}active{% endif %}"><a href="/screenerdata/">ScreenerData</a></li>
             <li><a href="/nsedata/">NseData</a></li>
             <li class="{% if 'analysis' in request.path %}active{% endif %}"><a href="/analysis/">AnalysisData</a></li>
             <li class="dropdown" style="float:right">
