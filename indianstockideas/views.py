@@ -136,11 +136,8 @@ def moneycontrolfunding():
     featured = FeaturedStock.objects.filter(recommended = True)
     MutualFundHolding.objects.all().delete()
     for obj in featured:
-        print obj,"ddddddddd"
         
         symbol = obj.symbol
-        print symbol,"second"
-        
         control = MoneyControlMapping.objects.get(stockname=symbol+" ")
         
         mutualfundcode = control.urlsplit3
@@ -293,9 +290,8 @@ def executescript(type):
         obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
         obj.status = "In Progress"
         obj.save()
-        moneycontrolfunding()
-#         import thread
-#         thread.start_new_thread( moneycontrolfunding,() )
+        import thread
+        thread.start_new_thread( moneycontrolfunding,() )
         
 def fetchData():
     try:
