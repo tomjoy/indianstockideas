@@ -287,7 +287,7 @@ def executescript(type):
         thread.start_new_thread( moneyControlMapping,() )
         
     elif "Run MoneyControl MutualFund":
-        obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
+        obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl MutualFund')
         obj.status = "In Progress"
         obj.save()
         import thread
