@@ -189,7 +189,7 @@ def moneycontrolfunding():
             
             
           
-    obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
+    obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl MutualFund')
     obj.status = "Completed Fetching data from Funds"
     obj.save()      
         
