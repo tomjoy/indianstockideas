@@ -51,7 +51,7 @@ class UnPublishView(generic.TemplateView):
             fdata[0].published = False
             fdata[0].save()
         pubData = PublishedData.objects.get(stockname = symbol).delete()
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/analysis/")
     
 class AllDataView(generic.TemplateView):
     template_name = 'indianstockideas/index2.html'
