@@ -121,6 +121,8 @@ class  MutualFundHolding(models.Model):
     quarter_2_mf = models.CharField(max_length=150,blank = True,null = True)
     quarter_3_mf = models.CharField(max_length=150,blank = True,null = True)
     quarter_4_mf = models.CharField(max_length=150,blank = True,null = True)
+    bought = models.CharField(max_length=150,blank = True,null = True)
+    sold = models.CharField(max_length=150,blank = True,null = True)
     executed_date = models.DateField(auto_now=True)
     def __str__(self):
         return self.symbol
@@ -177,6 +179,8 @@ class FeaturedStock(models.Model):
     quarter_2_mf = models.CharField(max_length=150,blank = True,null = True)
     quarter_3_mf = models.CharField(max_length=150,blank = True,null = True)
     quarter_4_mf = models.CharField(max_length=150,blank = True,null = True)
+    bought = models.CharField(max_length=150,blank = True,null = True)
+    sold = models.CharField(max_length=150,blank = True,null = True)
     mf_flag = models.BooleanField(default = False)
     published = models.BooleanField(default = False)
     executed_date = models.DateField(auto_now=True)

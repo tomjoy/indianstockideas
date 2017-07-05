@@ -31,7 +31,7 @@ class IndexView(generic.TemplateView):
           'publish': True,
 	      'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
 	    			"YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4','MF Analysis', "Publish","Executed Date"]           
+	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4',"Bought","Sold",'MF Analysis', "Publish","Executed Date"]           
 	    })
         return context
     
@@ -50,7 +50,9 @@ class UnPublishView(generic.TemplateView):
         if fdata:
             fdata[0].published = False
             fdata[0].save()
-        pubData = PublishedData.objects.get(stockname = symbol).delete()
+        pubData = PublishedData.objects.filter(stockname = symbol)
+        if pubData:
+            pubData[0].delete()
         return HttpResponseRedirect("/analysis/")
     
 class AllDataView(generic.TemplateView):
@@ -66,7 +68,7 @@ class AllDataView(generic.TemplateView):
           'publish': False,  
           'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
                     "YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-                     "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4','MF Analysis','Published',"Executed Date"]           
+                     "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4','Bought','Sold','MF Analysis','Published',"Executed Date"]           
         })
         return context
     
@@ -143,13 +145,16 @@ def moneycontrolfunding():
         mutualfundcode = control.urlsplit3
         url = settings.MONEYCONTROL_FUNDS
         url = url.replace('$$',str(mutualfundcode).strip())
-        print url
         web = urllib.urlopen(url)
         s = web.read()
          
         html = etree.HTML(s)
       
         span_nodes = html.xpath('//div[@id="div_0"]/div/table[@class="tblfund2"]/tr[last()]//text()')
+        bought = html.xpath('//li[@id="nav_1"]/a/span//text()')
+        sold = html.xpath('//li[@id="nav_2"]/a/span//text()')
+        bought = bought[0] if bought else ""
+        sold = sold[0] if sold else ""       
         q,q1,q2,q3,q4 = span_nodes[4],span_nodes[7],span_nodes[9],span_nodes[11],span_nodes[13]
         f_obj = FeaturedStock.objects.get(recommended = True,symbol = symbol)
         if int(q.replace(',',''))>int(q1.replace(',',''))*1.2:
@@ -175,7 +180,9 @@ def moneycontrolfunding():
                             quarter_1_mf=q1,
                             quarter_2_mf=q2,
                             quarter_3_mf=q3,
-                            quarter_4_mf=q4)
+                            quarter_4_mf=q4,
+                            bought = bought,
+                            sold=sold)
                                     
             mf_obj.save()
         else:
@@ -185,6 +192,8 @@ def moneycontrolfunding():
         f_obj.quarter_2_mf=q2
         f_obj.quarter_3_mf=q3
         f_obj.quarter_4_mf=q4
+        f_obj.bought = bought
+        f_obj.sold = sold
         f_obj.save()
             
             
