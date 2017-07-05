@@ -38,7 +38,7 @@ class IndexView(generic.TemplateView):
 class PublishView(generic.TemplateView):
     def get(self, request,symbol):
         fdata = FeaturedStock.objects.get(recommended = True,symbol = symbol)
-        pubData = PublishedData(stockname = symbol,price = fdata.close)
+        pubData = PublishedData(stockname = symbol,price = fdata.current_price)
         pubData.save()
         fdata.published = True
         fdata.save()
