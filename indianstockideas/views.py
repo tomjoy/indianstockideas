@@ -140,7 +140,9 @@ def moneycontrolfunding():
     for obj in featured:
         
         symbol = obj.symbol
-        control = MoneyControlMapping.objects.get(stockname=symbol+" ")
+        control = MoneyControlMapping.objects.filter(stockname=symbol+" ")
+        if not control:
+            continue
         
         mutualfundcode = control.urlsplit3
         url = settings.MONEYCONTROL_FUNDS
