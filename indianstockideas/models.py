@@ -21,6 +21,7 @@ class ScreenerSetting(models.Model):
     api_url = models.URLField(default='https://www.screener.in/api/screens/query/?query=')
     query = models.TextField(max_length=500,default = "Current+ratio+%3E+1.2+AND%0D%0AEPS+%3E+EPS+last+year+AND%0D%0ASales+last+year+%3E+Sales+preceding+year+AND%0D%0ANet+Profit+last+year+%3E+Net+Profit+preceding+year+AND%0D%0AMarket+Capitalization+%3E+5+AND%0D%0ANet+Profit++%3E+10+AND%0D%0ANet+Profit+last+year+%3E+5+AND%0D%0Acurrenttohigh+%3C+81")
     datasheet_query = models.TextField(max_length=500,default = "salesFlag = sales[0]<sales[1]<sales[2]<sales[3]<sales[4];profitFlag = netProfit[0]<netProfit[1]<netProfit[2]<netProfit[3]<netProfit[4];featured = salesFlag and profitFlag and salesCurrentQuarter>salesPreviousQuarter and netProfitCurrentQuarter>netProfitPreviousQuarter;")
+    chartlink_rule = models.TextField(max_length=500,default = "{cash} ( close < ema(close,200) )")
     active = models.BooleanField(default = False)
     date = models.DateField(auto_now=True)
     def __str__(self):

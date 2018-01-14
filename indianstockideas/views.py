@@ -316,7 +316,8 @@ def executescript(type):
         authenticity_token = list(set(tree.xpath("//meta[@name='csrf-token']")))
         csrf = authenticity_token[0].get('content')
         header={'X-CSRF-TOKEN':csrf,'Cookie':ci_session}
-        result = requests.post('https://chartink.com/screener/process',data={'scan_clause':'{cash} ( close < ema(close,200) )'}, headers= header)
+        obj = ScreenerSetting.objects.filter(active=True)[0]        
+        result = requests.post('https://chartink.com/screener/process',data={'scan_clause':obj.chartlink_rule}, headers= header)
         AllDict=json.loads(result.text)
         commondata = FeaturedStock.objects.filter(recommended = True).order_by('symbol')
         def build_dict(seq, key):
