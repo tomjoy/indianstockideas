@@ -13,8 +13,7 @@
     <title>IndianStockIdeas</title>
 
     <link href="{% static 'indianstockideas/bootstrap.css' %}" rel="stylesheet">
-
-    
+	
   </head>
 
   <body>
@@ -51,14 +50,16 @@
     </nav>
 
     <div class="container theme-showcase" role="main" style="margin-top:80px;">
+    <div class="wrapper">
+    
     <table class="table table-bordered table-striped table-hover">
     <thead class="btn-primary">
       <tr>
-      <th>
+      <th class="first">
       #
       </th>
         {%for i in headers%}
-        <th {% if i == "Executed Date" %}style="min-width:98px"{%endif%}>
+        <th style="{% if i == "Executed Date" %}min-width:98px{%endif%}" {% if i == "Symbol"%}class="second"{%endif%}>
         {{i}}
         </th>
         {% endfor%}
@@ -68,10 +69,10 @@
     {%for rowdata in commondata%}
       <tr>
       
-       <td>
+       <td class='first'>
        {{ forloop.counter }}
        </td>
-       <td>
+       <td class='second'>
        {{ rowdata.1 }}
        </td>
    
@@ -105,11 +106,15 @@
         </td>
         
         {% endfor%}
+        <td>
+        {{rowdata.1}}
+        </td>
         
       </tr>
       {% endfor%}
     </tbody>
   </table>
+  </div>
 
          </div> <!-- /container -->
 
