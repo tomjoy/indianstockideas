@@ -16,6 +16,7 @@ from .models import NSESetting, MoneyControlMapping, PublishedData, MutualFundHo
 from lxml import etree
 import urllib,xlrd
 from multiprocessing import Process
+from datetime import datetime
 #test
 
 class IndexView(generic.TemplateView):
@@ -31,7 +32,7 @@ class IndexView(generic.TemplateView):
           'publish': True,
 	      'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
 	    			"YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4',"Bought","Sold",'MF Analysis', "Publish","Executed Date"]           
+	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4',"Bought","Sold",'MF Analysis','Publish',"Technical Analysis","Executed Date"]           
 	    })
         return context
     
@@ -245,6 +246,7 @@ def logout_view(request):
     return HttpResponseRedirect('/')
 
 def executescript(type):
+    print "type",type
     if type=='Run NSE':
         obj = NSESetting.objects.filter(active=True)[0]
         dates = {1:'date1',2:'date2',3:'date3',4:'date4',5:'date5',6:'date6'}
@@ -292,6 +294,7 @@ def executescript(type):
         obj.save()
         import thread
         thread.start_new_thread( fetchData,() )
+        #fetchData()
     elif type == "Run MoneyControl":
         obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
         obj.status = "In Progress"
@@ -299,12 +302,37 @@ def executescript(type):
         import thread
         thread.start_new_thread( moneyControlMapping,() )
         
-    elif "Run MoneyControl MutualFund":
+    elif type =="Run MoneyControl MutualFund":
         obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl MutualFund')
         obj.status = "In Progress"
         obj.save()
         import thread
         thread.start_new_thread( moneycontrolfunding,() )
+    elif type=="Run Chartlink":
+        session = requests.Session()
+        response = session.get('https://chartink.com/screener')
+        ci_session = 'ci_session='+session.cookies.get_dict()['ci_session']
+        tree = html.fromstring(response.text)
+        authenticity_token = list(set(tree.xpath("//meta[@name='csrf-token']")))
+        csrf = authenticity_token[0].get('content')
+        header={'X-CSRF-TOKEN':csrf,'Cookie':ci_session}
+        result = requests.post('https://chartink.com/screener/process',data={'scan_clause':'{cash} ( close < ema(close,200) )'}, headers= header)
+        AllDict=json.loads(result.text)
+        commondata = FeaturedStock.objects.filter(recommended = True).order_by('symbol')
+        def build_dict(seq, key):
+            return dict((d[key], dict(d, index=index)) for (index, d) in enumerate(seq))
+        print result.text
+        for cdata in commondata:
+            try:
+                valFound = build_dict(AllDict['data'], 'nsecode').get(cdata.symbol,'')
+                if valFound:
+                    cdata.chartlink = True
+                    cdata.save()                 
+            except:
+                pass
+            
+        return HttpResponse(result.text)
+        
         
 def fetchData():
     try:
@@ -429,7 +457,81 @@ def saveStocks(companyStock,screen,flag):
                     cash_from_operations_last_year = screen.cash_from_operations_last_year,
                     cash_from_operations_preceding_year = screen.cash_from_operations_preceding_year,
                     recommended = flag)     
-    obj.save()   
+    obj.save()
+    control = MoneyControlMapping.objects.filter(stockname=companyStock[0]+" ")
+    if control:
+        sector = control[0].sector
+    else:
+        sector = ''
+    """
+    excelObj = ExcelData(Stock_Name = companyStock[0],
+                        Sector = sector,
+                        Last_Price = screen.current_price,
+                        Capital = screen.market_capitalization,
+                        Date1 = dates[1],
+                        Date2 = dates[1],
+                        Date3 = dates[1],
+                        Date4 = dates[1],
+                        Date5 = dates[1],
+                        Date6 = dates[1],
+                        Result_Date = str(datetime.now().date())
+                        PAT_Quarter_P1 = 
+                        PAT_Quarter_P2 = 
+                        PAT_Quarter_P3 = 
+                        PAT_Quarter_P4 = 
+                        PAT_Quarter_Current = 
+                        PAT_Annual_P1 = 
+                        PAT_Annual_P2 = 
+                        PAT_Annual_P3 = 
+                        PAT_Annual_P4 = 
+                        PAT_Annual_Current = 
+                        PBT_Quarter_P1 = 
+                        PBT_Quarter_P2 = 
+                        PBT_Quarter_P3 = 
+                        PBT_Quarter_P4 = 
+                        PBT_Quarter_Current = 
+                        PBT_Annual_P1 = 
+                        PBT_Annual_P2 = 
+                        PBT_Annual_P3 = 
+                        PBT_Annual_P4 = 
+                        PBT_Annual_Current = 
+                        Sales_Quarter_P1 = 
+                        Sales_Quarter_P2 = 
+                        Sales_Quarter_P3 = 
+                        Sales_Quarter_P4 = 
+                        Sales_Quarter_Current = 
+                        Sales_Annual_P1 = 
+                        Sales_Annual_P2 = 
+                        Sales_Annual_P3 = 
+                        Sales_Annual_P4 = 
+                        Sales_Annual_Current = 
+                        Exception_and_extra_ordinary_items_Annual_P1 = 
+                        Exception_and_extra_ordinary_items_Annual_P2 = 
+                        Exception_and_extra_ordinary_items_Annual_P3 = 
+                        Exception_and_extra_ordinary_items_Annual_P4 = 
+                        Exception_and_extra_ordinary_items_Annual_Current = 
+                        Interest_Annual_P1 = 
+                        Interest_Annual_P2 = 
+                        Interest_Annual_P3 = 
+                        Interest_Annual_P4 = 
+                        Interest_Annual_Current = 
+                        EPS_Annual_P1 = 
+                        EPS_Annual_P2 = 
+                        EPS_Annual_P3 = 
+                        EPS_Annual_P4 = 
+                        EPS_Annual_Current = 
+                        Mutual_Fund_previous = 
+                        Mutual_Fund_current = 
+                        Market_Cap = 
+                        Book_Value = 
+                        Face_Value = 
+                        PE = 
+                        DE_Ratio = 
+                        Pledge = 
+                        Divident_Ratio = 
+                        Promoters_Holding_Last = 
+                        Promoters_Holding_Current = )
+    """
     
 def getnse(screens):
     url = settings.NSE_URL

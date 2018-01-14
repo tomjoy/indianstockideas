@@ -48,7 +48,9 @@ class IndianStockIdeasAction(models.Model):
         ('Run Screener', 'Run Screener'),
         ('Fetch Data', 'Fetch Data'),
         ('Run MoneyControl', 'Run MoneyControl'),
-        ('Run MoneyControl MutualFund', 'Run MoneyControl MutualFund')
+        ('Run MoneyControl MutualFund', 'Run MoneyControl MutualFund'),
+        ('Run Chartlink', 'Run Chartlink'),
+        
     )
     
     action = models.CharField(max_length=50,choices = CHOICES, default = 'Run NSE')
@@ -183,8 +185,82 @@ class FeaturedStock(models.Model):
     sold = models.CharField(max_length=150,blank = True,null = True)
     mf_flag = models.BooleanField(default = False)
     published = models.BooleanField(default = False)
+    chartlink = models.BooleanField(default = False)
     executed_date = models.DateField(auto_now=True)
     
     def __str__(self):
         return self.symbol
+
+
+class ExcelData(models.Model):
+    Stock_Name = models.CharField(max_length=150,blank = True,null = True)
+    Sector = models.CharField(max_length=150,blank = True,null = True)
+    Last_Price = models.CharField(max_length=150,blank = True,null = True)
+    Capital = models.CharField(max_length=150,blank = True,null = True)
+    Date1 = models.CharField(max_length=150,blank = True,null = True)
+    Date2 = models.CharField(max_length=150,blank = True,null = True)
+    Date3 = models.CharField(max_length=150,blank = True,null = True)
+    Date4 = models.CharField(max_length=150,blank = True,null = True)
+    Date5 = models.CharField(max_length=150,blank = True,null = True)
+    Date6 = models.CharField(max_length=150,blank = True,null = True)
+    Result_Date = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Quarter_P1 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Quarter_P2 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Quarter_P3 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Quarter_P4 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Quarter_Current = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Annual_P1 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Annual_P2 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Annual_P3 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Annual_P4 = models.CharField(max_length=150,blank = True,null = True)
+    PAT_Annual_Current = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Quarter_P1 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Quarter_P2 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Quarter_P3 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Quarter_P4 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Quarter_Current = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Annual_P1 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Annual_P2 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Annual_P3 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Annual_P4 = models.CharField(max_length=150,blank = True,null = True)
+    PBT_Annual_Current = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Quarter_P1 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Quarter_P2 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Quarter_P3 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Quarter_P4 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Quarter_Current = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Annual_P1 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Annual_P2 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Annual_P3 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Annual_P4 = models.CharField(max_length=150,blank = True,null = True)
+    Sales_Annual_Current = models.CharField(max_length=150,blank = True,null = True)
+    Exception_and_extra_ordinary_items_Annual_P1 = models.CharField(max_length=150,blank = True,null = True)
+    Exception_and_extra_ordinary_items_Annual_P2 = models.CharField(max_length=150,blank = True,null = True)
+    Exception_and_extra_ordinary_items_Annual_P3 = models.CharField(max_length=150,blank = True,null = True)
+    Exception_and_extra_ordinary_items_Annual_P4 = models.CharField(max_length=150,blank = True,null = True)
+    Exception_and_extra_ordinary_items_Annual_Current = models.CharField(max_length=150,blank = True,null = True)
+    Interest_Annual_P1 = models.CharField(max_length=150,blank = True,null = True)
+    Interest_Annual_P2 = models.CharField(max_length=150,blank = True,null = True)
+    Interest_Annual_P3 = models.CharField(max_length=150,blank = True,null = True)
+    Interest_Annual_P4 = models.CharField(max_length=150,blank = True,null = True)
+    Interest_Annual_Current = models.CharField(max_length=150,blank = True,null = True)
+    EPS_Annual_P1 = models.CharField(max_length=150,blank = True,null = True)
+    EPS_Annual_P2 = models.CharField(max_length=150,blank = True,null = True)
+    EPS_Annual_P3 = models.CharField(max_length=150,blank = True,null = True)
+    EPS_Annual_P4 = models.CharField(max_length=150,blank = True,null = True)
+    EPS_Annual_Current = models.CharField(max_length=150,blank = True,null = True)
+    Mutual_Fund_previous = models.CharField(max_length=150,blank = True,null = True)
+    Mutual_Fund_current = models.CharField(max_length=150,blank = True,null = True)
+    Market_Cap = models.CharField(max_length=150,blank = True,null = True)
+    Book_Value = models.CharField(max_length=150,blank = True,null = True)
+    Face_Value = models.CharField(max_length=150,blank = True,null = True)
+    PE = models.CharField(max_length=150,blank = True,null = True)
+    DE_Ratio = models.CharField(max_length=150,blank = True,null = True)
+    Pledge = models.CharField(max_length=150,blank = True,null = True)
+    Divident_Ratio = models.CharField(max_length=150,blank = True,null = True)
+    Promoters_Holding_Last = models.CharField(max_length=150,blank = True,null = True)
+    Promoters_Holding_Current = models.CharField(max_length=150,blank = True,null = True)
     
+    def __str__(self):
+        return self.symbol
+        
