@@ -191,7 +191,7 @@ class FeaturedStock(models.Model):
     def __str__(self):
         return self.symbol
 
-
+"""
 class ExcelData(models.Model):
     Stock_Name = models.CharField(max_length=150,blank = True,null = True)
     Sector = models.CharField(max_length=150,blank = True,null = True)
@@ -263,4 +263,4 @@ class ExcelData(models.Model):
     
     def __str__(self):
         return self.symbol
-        
+"""
