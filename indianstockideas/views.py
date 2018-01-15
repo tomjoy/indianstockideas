@@ -89,13 +89,13 @@ class AnalysisView(generic.TemplateView):
             current_price = jsonData["warehouse_set"]["current_price"]
             percentage = ((float(current_price)-float(data.price))/float(data.price))*100
             analysis =  percentage>0
-            analysisData.append(["",data.stockname,data.price,str(current_price),percentage, analysis])
+            analysisData.append(["",data.stockname,data.price,str(current_price),percentage, analysis,data.executed_date ])
             
         #print downloadExcel('/company/SATIN/'),"flag"
         context.update({
           'commondata':analysisData,   
           'publish':True,
-          'headers':['Symbol','Featured Price',"Current Price",'Variation %','Analysis','Action']})
+          'headers':['Symbol','Featured Price',"Current Price",'Variation %','Analysis','Action','Published Date']})
         return context
     
 class NseDataView(generic.TemplateView):
