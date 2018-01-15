@@ -95,7 +95,7 @@ class AnalysisView(generic.TemplateView):
         context.update({
           'commondata':analysisData,   
           'publish':True,
-          'headers':['Symbol','Featured Price',"Current Price",'Variation %','Analysis','Action','Published Date']})
+          'headers':['Symbol','Featured Price',"Current Price",'Variation %','Analysis','Published Date','Action']})
         return context
     
 class NseDataView(generic.TemplateView):
