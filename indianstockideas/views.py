@@ -32,7 +32,7 @@ class IndexView(generic.TemplateView):
           'publish': True,
 	      'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
 	    			"YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4',"Bought","Sold",'MF Analysis','Publish',"Technical Analysis","Executed Date"]           
+	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4',"Bought","Sold",'MF Analysis','Publish',"Technical Analysis","Executed Date","Symbol"]           
 	    })
         return context
     
