@@ -328,7 +328,11 @@ def executescript(type):
                 valFound = build_dict(AllDict['data'], 'nsecode').get(cdata.symbol,'')
                 if valFound:
                     cdata.chartlink = True
-                    cdata.save()                 
+                    cdata.save()
+                else:
+                    cdata.chartlink = False
+                    cdata.save()
+                                     
             except:
                 pass
             
