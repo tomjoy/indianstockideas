@@ -32,7 +32,7 @@ class IndexView(generic.TemplateView):
           'publish': True,
 	      'headers':['Symbol', "Current price", "Price to Earning", "Market Capitalization", "YOY Quarterly profit growth", 
 	    			"YOY Quarterly sales growth", "Net profit", "Profit growth 3Years", "Profit growth 5Years", "Sales growth 5Years",
-	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4',"Bought","Sold",'MF Analysis','Publish',"Technical Analysis","Executed Date","Symbol"]           
+	    			 "Sales growth 3Years", "ctohigh", "c2low", "52w Index", "Cash from operations last year", "Cash from operations preceding year","Featured",'Quarter','Quarter-1','Quarter-2','Quarter-3','Quarter-4',"Bought","Sold",'MF Analysis','Publish',"Technical Analysis","5Y Bullish","2Y_Bullish","Value_Buy","Executed Date","Symbol"]           
 	    })
         return context
     
@@ -308,6 +308,21 @@ def executescript(type):
         obj.save()
         import thread
         thread.start_new_thread( moneycontrolfunding,() )
+    elif type=="Run bse_bullish":
+        url = 'http://bse2nse.com/Dashboard/EOD/Equity/screens/search.php?watchstock='
+        commondata = FeaturedStock.objects.filter(recommended = True).order_by('symbol')
+        for cdata in commondata:
+            try:
+                response = requests.get(url+cdata.symbol,stream=True)
+                html = etree.HTML(response.text)
+                div_nodes = html.xpath('//td//text()')
+                vb = div_nodes[4].replace('");','')                
+                cdata.five_yr_bullish = div_nodes[2]
+                cdata.two_yr_bullish = div_nodes[3]
+                cdata.value_buy = vb
+                cdata.save()                                
+            except:
+                pass
     elif type=="Run Chartlink":
         session = requests.Session()
         response = session.get('https://chartink.com/screener')
