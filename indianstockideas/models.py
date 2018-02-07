@@ -51,6 +51,7 @@ class IndianStockIdeasAction(models.Model):
         ('Run MoneyControl', 'Run MoneyControl'),
         ('Run MoneyControl MutualFund', 'Run MoneyControl MutualFund'),
         ('Run Chartlink', 'Run Chartlink'),
+        ('Run bse_bullish', 'Run bse_bullish'),
         
     )
     
@@ -187,6 +188,9 @@ class FeaturedStock(models.Model):
     mf_flag = models.BooleanField(default = False)
     published = models.BooleanField(default = False)
     chartlink = models.BooleanField(default = False)
+    five_yr_bullish = models.CharField(max_length=100,blank = True,null = True)
+    two_yr_bullish = models.CharField(max_length=100,blank = True,null = True)
+    value_buy = models.CharField(max_length=100,blank = True,null = True)
     executed_date = models.DateField(auto_now=True)
     
     def __str__(self):
