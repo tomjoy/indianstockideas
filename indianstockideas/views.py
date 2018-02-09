@@ -327,7 +327,7 @@ def executescript(type):
         session = requests.Session()
         response = session.get('https://chartink.com/screener')
         ci_session = 'ci_session='+session.cookies.get_dict()['ci_session']
-        tree = html.fromstring(response.text)
+        tree = etree.HTML(response.text)
         authenticity_token = list(set(tree.xpath("//meta[@name='csrf-token']")))
         csrf = authenticity_token[0].get('content')
         header={'X-CSRF-TOKEN':csrf,'Cookie':ci_session}
