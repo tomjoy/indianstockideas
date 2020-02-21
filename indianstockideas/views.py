@@ -17,6 +17,7 @@ from lxml import etree
 import urllib,xlrd
 from multiprocessing import Process
 from datetime import datetime
+import sys
 #test
 
 class IndexView(generic.TemplateView):
@@ -647,6 +648,8 @@ def getscreener():
     result = session_requests.post(obj.login_url, data = payload, headers = dict(referer = obj.login_url))
     result = session_requests.get(obj.api_url+obj.query, headers = dict(referer = obj.api_url+obj.query))
     #import pdb;pdb.set_trace()
+    print result.text, "resultttttttttttttttttttttt"
+    sys.stdout.flush()
     doc = html.fromstring(result.text)
     #import pdb;pdb.set_trace() 
     pages = doc.xpath("//div[@class='flexed']/div[@class='sub']")
