@@ -229,11 +229,12 @@ def moneyControlMapping():
          
             html = etree.HTML(s)
             div_nodes = html.xpath('//div[@class="FL gry10"]//text()')
+            if div_nodes:
             #print div_nodes[7],div_nodes[2].split(': ')[1],url,url.split('/')[5],url.split('/')[6],url.split('/')[7]
-            mcontrol = MoneyControlMapping(stockname = div_nodes[2].split(': ')[1],sector = div_nodes[7],
-                    stockurl = url,urlsplit1 =url.split('/')[5], 
-                    urlsplit2 =url.split('/')[6],urlsplit3 = url.split('/')[7])
-            mcontrol.save() 
+                mcontrol = MoneyControlMapping(stockname = div_nodes[2].split(': ')[1],sector = div_nodes[7],
+                        stockurl = url,urlsplit1 =url.split('/')[5], 
+                        urlsplit2 =url.split('/')[6],urlsplit3 = url.split('/')[7])
+                mcontrol.save() 
         obj = IndianStockIdeasAction.objects.get(action='Run MoneyControl')
         obj.status = "Fetching %s data"%str(i)
         obj.save()
@@ -259,6 +260,7 @@ def executescript(type):
             nw = date.strftime('%d-%b-%Y').split('-')
             fname = 'cm'+nw[0]+nw[1].upper()+nw[2]+'bhav.csv'
             url = obj.nse_url+nw[2]+'/'+nw[1].upper()+'/'+fname+'.zip'
+            print url
         #'2016/NOV/cm08NOV2016bhav.csv.zip
             
             s=requests.get(url,stream=True)
@@ -268,26 +270,28 @@ def executescript(type):
         screens = getscreener()
         ScreenerData.objects.all().delete()
         for i,screencol in enumerate(screens):
-                company = screencol[0].split('/')[2]
-                obj = ScreenerData(
-                                    symbol = company,
-                                    current_price = screencol[2],
-                                    price_to_earning = screencol[3],
-                                    market_capitalization = screencol[4], 
-                                    yoy_quarterly_profit_growth = screencol[5],
-                                    yoy_quarterly_sales_growth = screencol[6],
-                                    net_profit = screencol[7],
-                                    profit_growth_3years = "NA",
-                                    profit_growth_5years = screencol[8],
-                                    sales_growth_5years = screencol[9],
-                                    sales_growth_3years = "NA",
-                                    ctohigh = screencol[10],
-                                    ctolow = screencol[11],
-                                    ftw_index = screencol[12],
-                                    cash_from_operations_last_year =screencol[13], 
-                                    cash_from_operations_preceding_year = screencol[14])
-                                    
-                obj.save()
+                if screencol:
+                    company = screencol[1].split('/')[2]
+                    if not company.isdigit():
+                        obj = ScreenerData(
+                                            symbol = company,
+                                            current_price = screencol[2],
+                                            price_to_earning = screencol[3],
+                                            market_capitalization = screencol[4], 
+                                            yoy_quarterly_profit_growth = screencol[7],
+                                            yoy_quarterly_sales_growth = screencol[9],
+                                            net_profit = screencol[6],
+                                            profit_growth_3years = screencol[15],
+                                            profit_growth_5years = screencol[17],
+                                            sales_growth_5years = screencol[16],
+                                            sales_growth_3years = screencol[14],
+                                            ctohigh = screencol[19],
+                                            ctolow = screencol[18],
+                                            ftw_index = screencol[21],
+                                            cash_from_operations_last_year ="NA", 
+                                            cash_from_operations_preceding_year = "NA")
+                                            
+                        obj.save()
     elif type == "Fetch Data":
         obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
         obj.status = "In Progress"
@@ -337,7 +341,7 @@ def executescript(type):
         commondata = FeaturedStock.objects.filter(recommended = True).order_by('symbol')
         def build_dict(seq, key):
             return dict((d[key], dict(d, index=index)) for (index, d) in enumerate(seq))
-        print result.text
+
         for cdata in commondata:
             try:
                 valFound = build_dict(AllDict['data'], 'nsecode').get(cdata.symbol,'')
@@ -403,14 +407,14 @@ def fetchData():
                 if formula:
                     finalList.append(row)
         screens = ScreenerData.objects.all()    
-        FeaturedStocks = []       
+        FeaturedStocks = []      
         for companyStock in finalList:
             saveNse(companyStock)
             for screen in screens:
                 if screen.symbol == companyStock[0]:
-                    found = False
-                    if downloadExcel('',screen.symbol):
-                        found = True
+                    found = True
+                    #if True:
+                    #    found = True
                     saveStocks(companyStock,screen,found)
                     #FeaturedStocks.append(companyStock+1)
         obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
@@ -425,6 +429,7 @@ def fetchData():
         obj.save()
                     
 def saveNse(companyStock): 
+
     obj = NseData(
                 symbol = companyStock[0],
                 series = companyStock[1],
@@ -641,14 +646,19 @@ def getscreener():
 	}
     result = session_requests.post(obj.login_url, data = payload, headers = dict(referer = obj.login_url))
     result = session_requests.get(obj.api_url+obj.query, headers = dict(referer = obj.api_url+obj.query))
-    AllDict=json.loads(result.text)
-    resultList = AllDict['page']['results']
+    #import pdb;pdb.set_trace()
+    doc = html.fromstring(result.text)
+    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']")[0].text
+    pages = int(pages.rsplit("of")[1].strip())
+    tr_nodes = doc.xpath("//table[@class='data-table text-nowrap striped']/tbody/tr")
+    td_content = [[td.text if i !=1 else td.xpath('a')[0].get('href') for i,td in enumerate(tr.xpath('td'))] for tr in tr_nodes[1:]]
+    resultList = td_content
     url = obj.api_url+obj.query
-    count = int(AllDict['page']['total'])+1
-    for i in range(2,count):
+    for i in range(2,pages+1):
         newurl = url+"&page="+str(i)
         endData = session_requests.get(newurl, headers = dict(referer = newurl))
-        outDict=json.loads(endData.text)
-        inner = outDict['page']['results']
-        resultList = resultList+inner
+        doc = html.fromstring(endData.text)
+        tr_nodes = doc.xpath("//table[@class='data-table text-nowrap striped']/tbody/tr")
+        td_content = [[td.text if i !=1 else td.xpath('a')[0].get('href') for i,td in enumerate(tr.xpath('td'))] for tr in tr_nodes[1:]]
+        resultList = resultList+td_content
     return resultList
