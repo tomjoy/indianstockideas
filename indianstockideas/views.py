@@ -648,7 +648,9 @@ def getscreener():
     result = session_requests.get(obj.api_url+obj.query, headers = dict(referer = obj.api_url+obj.query))
     #import pdb;pdb.set_trace()
     doc = html.fromstring(result.text)
-    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']")[0].text
+    #import pdb;pdb.set_trace() 
+    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']")
+    pages = pages[0].text if pages else 0
     pages = int(pages.rsplit("of")[1].strip())
     tr_nodes = doc.xpath("//table[@class='data-table text-nowrap striped']/tbody/tr")
     td_content = [[td.text if i !=1 else td.xpath('a')[0].get('href') for i,td in enumerate(tr.xpath('td'))] for tr in tr_nodes[1:]]
