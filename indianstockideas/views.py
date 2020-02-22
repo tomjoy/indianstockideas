@@ -648,7 +648,7 @@ def getscreener():
     result = session_requests.post(obj.login_url, data = payload, headers = dict(referer = obj.login_url))
     result = session_requests.get(obj.api_url+obj.query, headers = dict(referer = obj.api_url+obj.query))
     #import pdb;pdb.set_trace()
-    print result.text, "resultttttttttttttttttttttt"
+    #print result.text, "resultttttttttttttttttttttt"
     sys.stdout.flush()
     doc = html.fromstring(result.text)
     #import pdb;pdb.set_trace() 
