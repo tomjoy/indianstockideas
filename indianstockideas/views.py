@@ -660,7 +660,7 @@ def getscreener():
     
     pages = doc.xpath("//div[@id='industry-filter-results']")
     print str(result)
-    print str(result.text)
+    print str(obj.api_url+obj.query)
     print "###########################################################3"
     return str(pages)
     #import pdb;pdb.set_trace()
