@@ -269,6 +269,7 @@ def executescript(type):
             v.extractall('csvfiles/')
     elif type == "Run Screener":
         screens = getscreener()
+        return HttpResponse(screens)
         ScreenerData.objects.all().delete()
         for i,screencol in enumerate(screens):
                 if screencol:
@@ -653,7 +654,7 @@ def getscreener():
     doc = html.fromstring(result.text)
     #import pdb;pdb.set_trace() 
     pages = doc.xpath("//div[@class='flexed']/div[@class='sub']//text()")
-    return HttpResponse(str(pages))
+    return str(pages)
     #import pdb;pdb.set_trace()
     #pages = pages[0].text
     pages = int(pages.rsplit("of")[-1].strip())
