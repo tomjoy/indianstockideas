@@ -18,6 +18,7 @@ import urllib,xlrd
 from multiprocessing import Process
 from datetime import datetime
 import sys
+from pydoc import doc
 #test
 
 class IndexView(generic.TemplateView):
@@ -656,6 +657,8 @@ def getscreener():
     sys.stdout.flush()
     doc = html.fromstring(result.text)
     #import pdb;pdb.set_trace() 
+    print doc
+    print "###########################################################3"
     pages = doc.xpath("//div[@class='flexed']/div[@class='sub']//text()")
     return str(pages)
     #import pdb;pdb.set_trace()
