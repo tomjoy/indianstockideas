@@ -652,8 +652,9 @@ def getscreener():
     sys.stdout.flush()
     doc = html.fromstring(result.text)
     #import pdb;pdb.set_trace() 
-    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']")
-    pages = pages[0].text
+    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']//text()")[0]
+    #import pdb;pdb.set_trace()
+    #pages = pages[0].text
     pages = int(pages.rsplit("of")[-1].strip())
     tr_nodes = doc.xpath("//table[@class='data-table text-nowrap striped']/tbody/tr")
     td_content = [[td.text if i !=1 else td.xpath('a')[0].get('href') for i,td in enumerate(tr.xpath('td'))] for tr in tr_nodes[1:]]
