@@ -257,6 +257,7 @@ def executescript(type):
         obj = NSESetting.objects.filter(active=True)[0]
         dates = {1:'date1',2:'date2',3:'date3',4:'date4',5:'date5',6:'date6'}
         import os
+        import urllib2
         filelist = [ f for f in os.listdir("csvfiles/")]
         for f in filelist:
             os.remove('csvfiles/'+f)
@@ -268,12 +269,13 @@ def executescript(type):
             print url
         #'2016/NOV/cm08NOV2016bhav.csv.zip
             
-            s=requests.get(url)
+            s = urllib2.urlopen(url)
+            #s=requests.get(url)
             print "################################################################"
             print s
             print url
             print "################################################################"
-            v = ZipFile(StringIO(s.content))
+            v = ZipFile(StringIO(s.read()))
             v.extractall('csvfiles/')
     elif type == "Run Screener":
         screens = getscreener()
