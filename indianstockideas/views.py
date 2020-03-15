@@ -84,10 +84,14 @@ class AnalysisView(generic.TemplateView):
         commondata = PublishedData.objects.all().order_by('stockname')
         analysisData = []
         for data in commondata:
-            url = "https://www.screener.in/api/company/"
+            url = "https://www.screener.in/company/"
             resp = requests.get(url=url+data.stockname)
-            jsonData = json.loads(resp.text)
-            current_price = jsonData["warehouse_set"]["current_price"]
+            doc = html.fromstring(resp.text)
+            #import pdb;pdb.set_trace() 
+            current_price = doc.xpath("//li[@class='four columns'][2]/b//text()")[0]
+            #jsonData = json.loads(resp.text)
+            
+            #current_price = jsonData["warehouse_set"]["current_price"]
             percentage = ((float(current_price)-float(data.price))/float(data.price))*100
             analysis =  percentage>0
             analysisData.append(["",data.stockname,data.price,str(current_price),percentage, analysis,data.executed_date ])
