@@ -88,7 +88,7 @@ class AnalysisView(generic.TemplateView):
             resp = requests.get(url=url+data.stockname)
             doc = html.fromstring(resp.text)
             #import pdb;pdb.set_trace() 
-            current_price = doc.xpath("//li[@class='four columns'][2]/b//text()")[0]
+            current_price = doc.xpath("//li[@class='four columns'][2]/b//text()")[0].replace(',',"")
             #jsonData = json.loads(resp.text)
             
             #current_price = jsonData["warehouse_set"]["current_price"]
