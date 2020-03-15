@@ -659,7 +659,8 @@ def getscreener():
     #import pdb;pdb.set_trace() 
     
     pages = doc.xpath("//div[@id='industry-filter-results']")
-    print result.text
+    print str(result)
+    print str(result.text)
     print "###########################################################3"
     return str(pages)
     #import pdb;pdb.set_trace()
