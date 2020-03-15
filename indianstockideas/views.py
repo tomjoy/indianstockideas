@@ -269,6 +269,9 @@ def executescript(type):
             v.extractall('csvfiles/')
     elif type == "Run Screener":
         screens = getscreener()
+        obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
+        obj.status = screens
+        obj.save()
         return HttpResponse(screens)
         ScreenerData.objects.all().delete()
         for i,screencol in enumerate(screens):
