@@ -652,7 +652,8 @@ def getscreener():
     sys.stdout.flush()
     doc = html.fromstring(result.text)
     #import pdb;pdb.set_trace() 
-    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']//text()")[0]
+    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']//text()")
+    return HttpResponse(str(pages))
     #import pdb;pdb.set_trace()
     #pages = pages[0].text
     pages = int(pages.rsplit("of")[-1].strip())
