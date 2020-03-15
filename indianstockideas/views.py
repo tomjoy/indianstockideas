@@ -18,7 +18,6 @@ import urllib,xlrd
 from multiprocessing import Process
 from datetime import datetime
 import sys
-from pydoc import doc
 #test
 
 class IndexView(generic.TemplateView):
@@ -270,10 +269,6 @@ def executescript(type):
             v.extractall('csvfiles/')
     elif type == "Run Screener":
         screens = getscreener()
-        obj = IndianStockIdeasAction.objects.get(action='Fetch Data')
-        obj.status = screens
-        obj.save()
-        return HttpResponse(screens)
         ScreenerData.objects.all().delete()
         for i,screencol in enumerate(screens):
                 if screencol:
@@ -657,12 +652,7 @@ def getscreener():
     sys.stdout.flush()
     doc = html.fromstring(result.text)
     #import pdb;pdb.set_trace() 
-    
-    pages = doc.xpath("//div[@id='industry-filter-results']")
-    print str(result)
-    print str(obj.api_url+obj.query)
-    print "###########################################################3"
-    return str(pages)
+    pages = doc.xpath("//div[@class='flexed']/div[@class='sub']//text()")[0]
     #import pdb;pdb.set_trace()
     #pages = pages[0].text
     pages = int(pages.rsplit("of")[-1].strip())
