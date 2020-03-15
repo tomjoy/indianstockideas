@@ -268,7 +268,7 @@ def executescript(type):
             print url
         #'2016/NOV/cm08NOV2016bhav.csv.zip
             
-            s=requests.get(url,stream=True)
+            s=requests.get(url)
             print "################################################################"
             print s
             print url
