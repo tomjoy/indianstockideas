@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import NSESetting, MutualFundHolding, ScreenerSetting,MoneyControlMapping, IndianStockIdeasAction,FeaturedStock,ScreenerData, NseData
+from .models import NSESetting, MutualFundHolding,PublishedData, ScreenerSetting,MoneyControlMapping, IndianStockIdeasAction,FeaturedStock,ScreenerData, NseData
 from .views import executescript
 import datetime
 def fetchData(modeladmin, request, queryset):
