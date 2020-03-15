@@ -269,6 +269,10 @@ def executescript(type):
         #'2016/NOV/cm08NOV2016bhav.csv.zip
             
             s=requests.get(url,stream=True)
+            print "################################################################"
+            print s
+            print url
+            print "################################################################"
             v = ZipFile(StringIO(s.content))
             v.extractall('csvfiles/')
     elif type == "Run Screener":
