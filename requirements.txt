@@ -4,7 +4,7 @@ Ghost.py==0.2.3
 gunicorn==19.3.0
 argparse==1.2.1
 dj-database-url==0.4.2
-lxml==3.7.2
+lxml==4.6.5
 psycopg2==2.6.2
 requests==2.13.0
 wsgiref==0.1.2
